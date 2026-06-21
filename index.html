@@ -49,14 +49,14 @@
     .image-block { margin: 28px 0; }
     img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
     .align-right img { margin-left: auto; margin-right: 0; }
-    .find-bar { display: flex; justify-content: flex-end; gap: 8px; width: 100%; padding: 4px 8px; box-sizing: border-box; background: #050607; }
+    .find-bar { display: flex; gap: 6px; width: 100%; padding: 4px 8px; box-sizing: border-box; background: #050607; }
     .find-bar input, .find-bar button { font: inherit; color: #e8e8e8; background: #101316; border: 1px solid rgba(232, 232, 232, 0.28); border-radius: 4px; }
-    .find-bar input { flex: 0 1 420px; min-width: 0; padding: 7px 9px; }
-    .find-bar button { padding: 7px 12px; cursor: pointer; }
+    .find-bar input { flex: 1 1 auto; min-width: 0; padding: 7px 9px; }
+    .find-bar button { flex: 0 0 auto; min-width: 48px; padding: 7px 10px; cursor: pointer; }
     .find-bar input:focus, .find-bar button:focus { outline: 2px solid #8d9298; outline-offset: 2px; }
     .find-bar button:hover { background: #171c20; }
     @media print { body { height: auto; overflow: visible; background: #fff; color: #000; } .page-shell, .page-shell tbody, .page-shell tr, .page-shell td { display: block; height: auto; } .document-scroll { height: auto; overflow: visible; padding: 0; } .toolbar-row { display: none !important; } .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { color: #777 !important; } }
-    @media (max-width: 700px) { body { font-size: 14px; } .document-scroll { padding: 14px; } .doc-page { margin-bottom: 24px; } .image-block { margin: 20px 0; } .small-table { font-size: 11px; } .find-bar input { flex-basis: 100%; } }
+    @media (max-width: 700px) { body { font-size: 14px; } .document-scroll { padding: 14px; } .doc-page { margin-bottom: 24px; } .image-block { margin: 20px 0; } .small-table { font-size: 11px; } .find-bar { gap: 4px; padding: 4px; } .find-bar button { min-width: 40px; padding: 7px 6px; } }
   </style>
 </head>
 <body>
@@ -24689,8 +24689,11 @@ B) “Суккулент-прибойник” — толстые листья, 
 <tr class="toolbar-row">
 <td class="toolbar-cell">
 <form class="find-bar" data-find-form>
-  <button type="submit">find</button>
+  <button type="button" data-prev-page title="previous page" aria-label="previous page">↑§</button>
+  <button type="button" data-find-up title="find up" aria-label="find up">↑🔍</button>
   <input data-find-input type="search" autocomplete="off" spellcheck="false" aria-label="find">
+  <button type="submit" data-find-down title="find down" aria-label="find down">🔎↓</button>
+  <button type="button" data-next-page title="next page" aria-label="next page">§↓</button>
 </form>
 </td>
 </tr>
@@ -24699,60 +24702,32 @@ B) “Суккулент-прибойник” — толстые листья, 
   (() => {
     const form = document.querySelector("[data-find-form]");
     const input = document.querySelector("[data-find-input]");
+    const prevPageButton = document.querySelector("[data-prev-page]");
+    const findUpButton = document.querySelector("[data-find-up]");
+    const nextPageButton = document.querySelector("[data-next-page]");
     const root = document.querySelector("main");
     const scrollRoot = document.querySelector("[data-document-scroll]");
+    const pages = Array.from(document.querySelectorAll(".doc-page"));
     let lastQuery = "";
-    let fallbackLast = null;
+    let lastMatch = null;
 
-    const rangeFromPoint = (x, y) => {
-      if (document.caretRangeFromPoint) {
-        return document.caretRangeFromPoint(x, y);
+    const normalize = (value) => value.toLocaleLowerCase();
+
+    const textNodes = () => {
+      const nodes = [];
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.nodeValue) nodes.push(node);
       }
-      if (document.caretPositionFromPoint) {
-        const position = document.caretPositionFromPoint(x, y);
-        if (!position) return null;
-        const range = document.createRange();
-        range.setStart(position.offsetNode, position.offset);
-        return range;
-      }
-      return null;
+      return nodes;
     };
 
-    const placeSelectionAtViewportStart = () => {
-      const selection = window.getSelection();
-      const rect = root.getBoundingClientRect();
-      const scrollRect = scrollRoot.getBoundingClientRect();
-      const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-      const xs = [
-        clamp(rect.left + 16, 1, window.innerWidth - 2),
-        clamp(rect.left + rect.width / 2, 1, window.innerWidth - 2),
-        clamp(rect.right - 16, 1, window.innerWidth - 2)
-      ];
-      const ys = [
-        scrollRect.top + 16,
-        scrollRect.top + 80,
-        scrollRect.top + 160,
-        clamp(scrollRect.top + scrollRect.height * 0.35, scrollRect.top + 1, scrollRect.bottom - 2)
-      ];
-
-      for (const y of ys) {
-        for (const x of xs) {
-          const range = rangeFromPoint(x, y);
-          if (range && root.contains(range.startContainer)) {
-            range.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(range);
-            return true;
-          }
-        }
-      }
-
-      const fallback = document.createRange();
-      fallback.setStart(root, 0);
-      fallback.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(fallback);
-      return false;
+    const makeRange = (node, start, length) => {
+      const range = document.createRange();
+      range.setStart(node, start);
+      range.setEnd(node, start + length);
+      return range;
     };
 
     const selectRange = (range) => {
@@ -24765,133 +24740,174 @@ B) “Суккулент-прибойник” — толстые листья, 
       scrollRoot.scrollTo({ top, behavior: "smooth" });
     };
 
-    const fallbackSelect = (query, node, offset, range) => {
-      fallbackLast = {
-        query: query.toLocaleLowerCase(),
+    const selectMatch = (query, node, start) => {
+      const range = makeRange(node, start, query.length);
+      lastMatch = {
+        query: normalize(query),
         node,
-        end: offset + query.length
+        start,
+        end: start + query.length
       };
       selectRange(range);
       return true;
     };
 
-    const fallbackFirst = (query) => {
-      const needle = query.toLocaleLowerCase();
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-      let node;
-      while ((node = walker.nextNode())) {
+    const findFirst = (query) => {
+      const needle = normalize(query);
+      for (const node of textNodes()) {
         const haystack = node.nodeValue.toLocaleLowerCase();
-        const offset = haystack.indexOf(needle);
-        if (offset !== -1) {
-          const range = document.createRange();
-          range.setStart(node, offset);
-          range.setEnd(node, offset + query.length);
-          return fallbackSelect(query, node, offset, range);
-        }
+        const start = haystack.indexOf(needle);
+        if (start !== -1) return { node, start };
       }
       return false;
     };
 
-    const fallbackFromViewport = (query) => {
-      const needle = query.toLocaleLowerCase();
+    const findLast = (query) => {
+      const needle = normalize(query);
+      let last = null;
+      for (const node of textNodes()) {
+        const haystack = node.nodeValue.toLocaleLowerCase();
+        let start = 0;
+        while ((start = haystack.indexOf(needle, start)) !== -1) {
+          last = { node, start };
+          start += Math.max(query.length, 1);
+        }
+      }
+      return last;
+    };
+
+    const rangeTop = (node, start, length) => {
+      return makeRange(node, start, length).getBoundingClientRect().top;
+    };
+
+    const findFromViewport = (query, direction) => {
+      const needle = normalize(query);
       const viewportTop = scrollRoot.getBoundingClientRect().top + 2;
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
       let first = null;
-      let node;
-      while ((node = walker.nextNode())) {
+      let previous = null;
+      let last = null;
+
+      for (const node of textNodes()) {
         const haystack = node.nodeValue.toLocaleLowerCase();
-        let offset = 0;
-        while ((offset = haystack.indexOf(needle, offset)) !== -1) {
-          const range = document.createRange();
-          range.setStart(node, offset);
-          range.setEnd(node, offset + query.length);
-          if (!first) first = { node, offset, range };
-          const top = range.getBoundingClientRect().top;
-          if (top >= viewportTop) {
-            return fallbackSelect(query, node, offset, range);
+        let start = 0;
+        while ((start = haystack.indexOf(needle, start)) !== -1) {
+          const match = { node, start };
+          const top = rangeTop(node, start, query.length);
+          if (!first) first = match;
+          last = match;
+
+          if (direction === "down" && top >= viewportTop) {
+            return match;
           }
-          offset += Math.max(query.length, 1);
+          if (direction === "up") {
+            if (top < viewportTop) {
+              previous = match;
+            } else if (previous) {
+              return previous;
+            }
+          }
+
+          start += Math.max(query.length, 1);
         }
       }
-      if (first) {
-        return fallbackSelect(query, first.node, first.offset, first.range);
-      }
-      return false;
+      return direction === "down" ? first : (previous || last);
     };
 
-    const fallbackAfterLast = (query) => {
-      const needle = query.toLocaleLowerCase();
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const findAfterLast = (query) => {
+      const needle = normalize(query);
       let afterLast = false;
-      let node;
-      while ((node = walker.nextNode())) {
-        let offset = 0;
+
+      for (const node of textNodes()) {
+        let start = 0;
         if (!afterLast) {
-          if (!fallbackLast || node !== fallbackLast.node) continue;
+          if (!lastMatch || node !== lastMatch.node) continue;
           afterLast = true;
-          offset = fallbackLast.end;
+          start = lastMatch.end;
         }
         const haystack = node.nodeValue.toLocaleLowerCase();
-        while ((offset = haystack.indexOf(needle, offset)) !== -1) {
-          const range = document.createRange();
-          range.setStart(node, offset);
-          range.setEnd(node, offset + query.length);
-          return fallbackSelect(query, node, offset, range);
+        while ((start = haystack.indexOf(needle, start)) !== -1) {
+          return { node, start };
         }
       }
-      if (!afterLast) {
-        return fallbackFromViewport(query);
+      return afterLast ? findFirst(query) : findFromViewport(query, "down");
+    };
+
+    const findBeforeLast = (query) => {
+      const needle = normalize(query);
+      let previous = null;
+
+      for (const node of textNodes()) {
+        const haystack = node.nodeValue.toLocaleLowerCase();
+        let start = 0;
+        while ((start = haystack.indexOf(needle, start)) !== -1) {
+          if (lastMatch && node === lastMatch.node && start >= lastMatch.start) {
+            return previous || findLast(query);
+          }
+          previous = { node, start };
+          start += Math.max(query.length, 1);
+        }
       }
-      return fallbackFirst(query);
+      return lastMatch ? previous : findFromViewport(query, "up");
     };
 
-    const fallbackFind = (query, sameQuery) => {
-      if (sameQuery && fallbackLast && fallbackLast.query === query.toLocaleLowerCase()) {
-        return fallbackAfterLast(query);
-      }
-      fallbackLast = null;
-      return fallbackFromViewport(query);
-    };
-
-    const find = (query, sameQuery) => {
-      return fallbackFind(query, sameQuery);
-    };
-
-    const resetFallback = () => {
-      fallbackLast = null;
-    };
-
-    const resetQuery = () => {
-      lastQuery = "";
-      resetFallback();
-    };
-
-    const prepareNewQuery = () => {
-      input.blur();
-      placeSelectionAtViewportStart();
-      resetFallback();
-    };
-
-    const submitFind = () => {
+    const runFind = (direction) => {
       const query = input.value.trim();
       if (!query) return;
-      const normalizedQuery = query.toLocaleLowerCase();
-      const sameQuery = normalizedQuery === lastQuery;
-      if (!sameQuery) {
-        prepareNewQuery();
-      }
+      const normalizedQuery = normalize(query);
+      const sameQuery = normalizedQuery === lastQuery && lastMatch && lastMatch.query === normalizedQuery;
+      const match = sameQuery
+        ? (direction === "down" ? findAfterLast(query) : findBeforeLast(query))
+        : findFromViewport(query, direction);
+
+      input.blur();
       lastQuery = normalizedQuery;
-      if (!find(query, sameQuery)) {
-        resetFallback();
+      if (match) {
+        selectMatch(query, match.node, match.start);
+      } else {
+        lastMatch = null;
       }
+    };
+
+    const resetSearch = () => {
+      lastQuery = "";
+      lastMatch = null;
+    };
+
+    const currentPageIndex = () => {
+      const scrollRect = scrollRoot.getBoundingClientRect();
+      const marker = scrollRoot.scrollTop + Math.max(40, scrollRoot.clientHeight * 0.18);
+      let currentIndex = 0;
+
+      for (let index = 0; index < pages.length; index++) {
+        const rect = pages[index].getBoundingClientRect();
+        const top = scrollRoot.scrollTop + rect.top - scrollRect.top;
+        if (top <= marker) {
+          currentIndex = index;
+        } else {
+          break;
+        }
+      }
+      return currentIndex;
+    };
+
+    const goToPage = (delta) => {
+      const scrollRect = scrollRoot.getBoundingClientRect();
+      const index = Math.min(Math.max(currentPageIndex() + delta, 0), pages.length - 1);
+      const pageRect = pages[index].getBoundingClientRect();
+      const top = Math.max(0, scrollRoot.scrollTop + pageRect.top - scrollRect.top - 12);
+      scrollRoot.scrollTo({ top, behavior: "smooth" });
+      resetSearch();
     };
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      submitFind();
+      runFind("down");
     });
 
-    input.addEventListener("input", resetQuery);
+    input.addEventListener("input", resetSearch);
+    findUpButton.addEventListener("click", () => runFind("up"));
+    prevPageButton.addEventListener("click", () => goToPage(-1));
+    nextPageButton.addEventListener("click", () => goToPage(1));
   })();
 </script>
 </body>

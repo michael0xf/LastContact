@@ -36,7 +36,7 @@
     .document-cell { height: 100%; vertical-align: top; }
     .document-scroll { height: 100%; overflow: auto; padding: 24px; box-sizing: border-box; }
     .toolbar-row { height: 1px; }
-    .toolbar-cell { height: 1px; vertical-align: middle; background: #050607; border-top: 1px solid rgba(232, 232, 232, 0.18); }
+    .toolbar-cell { height: 1px; vertical-align: middle; background: #050607; border-bottom: 1px solid rgba(232, 232, 232, 0.18); }
     main { max-width: 1180px; margin: 0 auto; }
     .doc-page { padding-top: 4px; margin: 0 0 30px; }
     .doc-page + .doc-page { border-top: 1px solid rgba(232, 232, 232, 0.12); padding-top: 10px; }
@@ -61,6 +61,17 @@
 </head>
 <body>
 <table class="page-shell" role="presentation">
+<tr class="toolbar-row">
+<td class="toolbar-cell">
+<form class="find-bar" data-find-form>
+  <button type="button" data-prev-page title="previous page" aria-label="previous page">↑§</button>
+  <button type="button" data-find-up title="find up" aria-label="find up">↑🔍</button>
+  <input data-find-input type="search" autocomplete="off" spellcheck="false" aria-label="find">
+  <button type="submit" data-find-down title="find down" aria-label="find down">🔎↓</button>
+  <button type="button" data-next-page title="next page" aria-label="next page">§↓</button>
+</form>
+</td>
+</tr>
 <tr class="document-row">
 <td class="document-cell">
 <div class="document-scroll" data-document-scroll>
@@ -24684,17 +24695,6 @@ B) “Суккулент-прибойник” — толстые листья, 
 </section>
 </main>
 </div>
-</td>
-</tr>
-<tr class="toolbar-row">
-<td class="toolbar-cell">
-<form class="find-bar" data-find-form>
-  <button type="button" data-prev-page title="previous page" aria-label="previous page">↑§</button>
-  <button type="button" data-find-up title="find up" aria-label="find up">↑🔍</button>
-  <input data-find-input type="search" autocomplete="off" spellcheck="false" aria-label="find">
-  <button type="submit" data-find-down title="find down" aria-label="find down">🔎↓</button>
-  <button type="button" data-next-page title="next page" aria-label="next page">§↓</button>
-</form>
 </td>
 </tr>
 </table>

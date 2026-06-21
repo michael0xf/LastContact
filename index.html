@@ -3,6 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (() => {
+      const url = new URL(location.href);
+      if (url.search) {
+        url.search = "";
+        history.replaceState({}, "", url);
+      }
+    })();
+  </script>
   <title>МИХАИЛ КРАВЧЕНКО - ПОСЛЕДНИЙ КОНТАКТ</title>
   <style>
     html { background: #050607; color: #e8e8e8; }

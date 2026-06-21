@@ -28,15 +28,13 @@
   </script>
   <title>МИХАИЛ КРАВЧЕНКО - ПОСЛЕДНИЙ КОНТАКТ</title>
   <style>
-    html { height: 100%; background: #050607; color: #e8e8e8; }
-    body { height: 100%; margin: 0; padding: 0; overflow: hidden; font-family: Consolas, "Lucida Console", "Courier New", monospace; font-size: 16px; line-height: 1.42; }
-    .page-shell { width: 100%; height: 100vh; border-collapse: collapse; table-layout: fixed; }
-    .page-shell td { padding: 0; }
-    .document-row { height: 100%; }
-    .document-cell { height: 100%; vertical-align: top; }
-    .document-scroll { height: 100%; overflow: auto; padding: 24px; box-sizing: border-box; }
-    .toolbar-row { height: 1px; }
-    .toolbar-cell { height: 1px; vertical-align: middle; background: #050607; border-bottom: 1px solid rgba(232, 232, 232, 0.18); }
+    html { background: #050607; color: #e8e8e8; }
+    body { margin: 0; padding: 0; font-family: Consolas, "Lucida Console", "Courier New", monospace; font-size: 16px; line-height: 1.42; }
+    .page-shell { width: 100%; min-height: 100vh; }
+    .toolbar-row { position: sticky; top: 0; z-index: 20; min-width: 0; background: #050607; border-bottom: 1px solid rgba(232, 232, 232, 0.18); }
+    .toolbar-cell { min-width: 0; }
+    .document-row, .document-cell { min-width: 0; }
+    .document-scroll { padding: 24px; box-sizing: border-box; }
     main { max-width: 1180px; margin: 0 auto; }
     .doc-page { padding-top: 4px; margin: 0 0 30px; }
     .doc-page + .doc-page { border-top: 1px solid rgba(232, 232, 232, 0.12); padding-top: 10px; }
@@ -55,14 +53,14 @@
     .find-bar button { flex: 0 0 auto; min-width: 48px; padding: 7px 10px; cursor: pointer; }
     .find-bar input:focus, .find-bar button:focus { outline: 2px solid #8d9298; outline-offset: 2px; }
     .find-bar button:hover { background: #171c20; }
-    @media print { body { height: auto; overflow: visible; background: #fff; color: #000; } .page-shell, .page-shell tbody, .page-shell tr, .page-shell td { display: block; height: auto; } .document-scroll { height: auto; overflow: visible; padding: 0; } .toolbar-row { display: none !important; } .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { color: #777 !important; } }
+    @media print { body { background: #fff; color: #000; } .document-scroll { padding: 0; } .toolbar-row { display: none !important; } .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { color: #777 !important; } }
     @media (max-width: 700px) { body { font-size: 14px; } .document-scroll { padding: 14px; } .doc-page { margin-bottom: 24px; } .image-block { margin: 20px 0; } .small-table { font-size: 11px; } .find-bar { gap: 4px; padding: 4px; } .find-bar button { min-width: 40px; padding: 7px 6px; } }
   </style>
 </head>
 <body>
-<table class="page-shell" role="presentation">
-<tr class="toolbar-row">
-<td class="toolbar-cell">
+<div class="page-shell">
+<div class="toolbar-row">
+<div class="toolbar-cell">
 <form class="find-bar" data-find-form>
   <button type="button" data-prev-page title="previous page" aria-label="previous page">↑§</button>
   <button type="button" data-find-up title="find up" aria-label="find up">↑🔍</button>
@@ -70,10 +68,10 @@
   <button type="submit" data-find-down title="find down" aria-label="find down">🔎↓</button>
   <button type="button" data-next-page title="next page" aria-label="next page">§↓</button>
 </form>
-</td>
-</tr>
-<tr class="document-row">
-<td class="document-cell">
+</div>
+</div>
+<div class="document-row">
+<div class="document-cell">
 <div class="document-scroll" data-document-scroll>
 <main>
 <section class="doc-page" id="page-1" data-page="1">
@@ -24695,9 +24693,9 @@ B) “Суккулент-прибойник” — толстые листья, 
 </section>
 </main>
 </div>
-</td>
-</tr>
-</table>
+</div>
+</div>
+</div>
 <script>
   (() => {
     const form = document.querySelector("[data-find-form]");
@@ -24706,18 +24704,25 @@ B) “Суккулент-прибойник” — толстые листья, 
     const findUpButton = document.querySelector("[data-find-up]");
     const nextPageButton = document.querySelector("[data-next-page]");
     const root = document.querySelector("main");
-    const scrollRoot = document.querySelector("[data-document-scroll]");
     const pages = Array.from(document.querySelectorAll(".doc-page"));
     let lastQuery = "";
     let lastMatch = null;
     let scrollHashTimer = 0;
 
     const normalize = (value) => value.toLocaleLowerCase();
+    const toolbarOffset = () => Math.ceil(document.querySelector(".toolbar-row").getBoundingClientRect().height) + 12;
+
+    const scrollToTop = (top, behavior = "smooth") => {
+      try {
+        window.scrollTo({ top, behavior });
+      } catch (_) {
+        window.scrollTo(0, top);
+      }
+    };
 
     const pageTop = (page) => {
-      const scrollRect = scrollRoot.getBoundingClientRect();
       const pageRect = page.getBoundingClientRect();
-      return Math.max(0, scrollRoot.scrollTop + pageRect.top - scrollRect.top - 12);
+      return Math.max(0, window.scrollY + pageRect.top - toolbarOffset());
     };
 
     const replacePageHash = (page) => {
@@ -24761,9 +24766,8 @@ B) “Суккулент-прибойник” — толстые листья, 
       selection.removeAllRanges();
       selection.addRange(range);
       const rect = range.getBoundingClientRect();
-      const scrollRect = scrollRoot.getBoundingClientRect();
-      const top = Math.max(0, scrollRoot.scrollTop + rect.top - scrollRect.top - scrollRoot.clientHeight * 0.28);
-      scrollRoot.scrollTo({ top, behavior: "smooth" });
+      const top = Math.max(0, window.scrollY + rect.top - window.innerHeight * 0.28);
+      scrollToTop(top);
     };
 
     const selectMatch = (query, node, start) => {
@@ -24809,7 +24813,7 @@ B) “Суккулент-прибойник” — толстые листья, 
 
     const findFromViewport = (query, direction) => {
       const needle = normalize(query);
-      const viewportTop = scrollRoot.getBoundingClientRect().top + 2;
+      const viewportTop = toolbarOffset() + 2;
       let first = null;
       let previous = null;
       let last = null;
@@ -24901,13 +24905,12 @@ B) “Суккулент-прибойник” — толстые листья, 
     };
 
     const currentPageIndex = () => {
-      const scrollRect = scrollRoot.getBoundingClientRect();
-      const marker = scrollRoot.scrollTop + Math.max(40, scrollRoot.clientHeight * 0.18);
+      const marker = window.scrollY + toolbarOffset() + 16;
       let currentIndex = 0;
 
       for (let index = 0; index < pages.length; index++) {
         const rect = pages[index].getBoundingClientRect();
-        const top = scrollRoot.scrollTop + rect.top - scrollRect.top;
+        const top = window.scrollY + rect.top;
         if (top <= marker) {
           currentIndex = index;
         } else {
@@ -24917,6 +24920,11 @@ B) “Суккулент-прибойник” — толстые листья, 
       return currentIndex;
     };
 
+    const navigationPageIndex = () => {
+      const hashIndex = pageIndexFromHash();
+      return hashIndex >= 0 ? hashIndex : currentPageIndex();
+    };
+
     const syncHashToCurrentPage = () => {
       replacePageHash(pages[currentPageIndex()]);
     };
@@ -24924,13 +24932,13 @@ B) “Суккулент-прибойник” — толстые листья, 
     const scrollToPageIndex = (index, behavior = "smooth", shouldResetSearch = true) => {
       const safeIndex = Math.min(Math.max(index, 0), pages.length - 1);
       const page = pages[safeIndex];
-      scrollRoot.scrollTo({ top: pageTop(page), behavior });
+      scrollToTop(pageTop(page), behavior);
       replacePageHash(page);
       if (shouldResetSearch) resetSearch();
     };
 
     const goToPage = (delta) => {
-      scrollToPageIndex(currentPageIndex() + delta);
+      scrollToPageIndex(navigationPageIndex() + delta);
     };
 
     form.addEventListener("submit", (event) => {
@@ -24943,7 +24951,7 @@ B) “Суккулент-прибойник” — толстые листья, 
     prevPageButton.addEventListener("click", () => goToPage(-1));
     nextPageButton.addEventListener("click", () => goToPage(1));
 
-    scrollRoot.addEventListener("scroll", () => {
+    window.addEventListener("scroll", () => {
       window.clearTimeout(scrollHashTimer);
       scrollHashTimer = window.setTimeout(syncHashToCurrentPage, 120);
     });
@@ -24959,8 +24967,6 @@ B) “Суккулент-прибойник” — толстые листья, 
       const index = pageIndexFromHash();
       if (index >= 0) {
         scrollToPageIndex(index, "auto", false);
-      } else {
-        syncHashToCurrentPage();
       }
     };
 

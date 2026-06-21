@@ -24710,8 +24710,34 @@ B) “Суккулент-прибойник” — толстые листья, 
     const pages = Array.from(document.querySelectorAll(".doc-page"));
     let lastQuery = "";
     let lastMatch = null;
+    let scrollHashTimer = 0;
 
     const normalize = (value) => value.toLocaleLowerCase();
+
+    const pageTop = (page) => {
+      const scrollRect = scrollRoot.getBoundingClientRect();
+      const pageRect = page.getBoundingClientRect();
+      return Math.max(0, scrollRoot.scrollTop + pageRect.top - scrollRect.top - 12);
+    };
+
+    const replacePageHash = (page) => {
+      if (!page?.dataset.page) return;
+      const hash = `#page-${page.dataset.page}`;
+      if (location.hash !== hash) {
+        history.replaceState({}, "", hash);
+      }
+    };
+
+    const pageForNode = (node) => {
+      const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+      return element?.closest(".doc-page") || null;
+    };
+
+    const pageIndexFromHash = () => {
+      const match = /^#page-(\d+)$/.exec(location.hash);
+      if (!match) return -1;
+      return pages.findIndex((page) => page.dataset.page === match[1]);
+    };
 
     const textNodes = () => {
       const nodes = [];
@@ -24748,6 +24774,7 @@ B) “Суккулент-прибойник” — толстые листья, 
         start,
         end: start + query.length
       };
+      replacePageHash(pageForNode(node));
       selectRange(range);
       return true;
     };
@@ -24890,13 +24917,20 @@ B) “Суккулент-прибойник” — толстые листья, 
       return currentIndex;
     };
 
+    const syncHashToCurrentPage = () => {
+      replacePageHash(pages[currentPageIndex()]);
+    };
+
+    const scrollToPageIndex = (index, behavior = "smooth", shouldResetSearch = true) => {
+      const safeIndex = Math.min(Math.max(index, 0), pages.length - 1);
+      const page = pages[safeIndex];
+      scrollRoot.scrollTo({ top: pageTop(page), behavior });
+      replacePageHash(page);
+      if (shouldResetSearch) resetSearch();
+    };
+
     const goToPage = (delta) => {
-      const scrollRect = scrollRoot.getBoundingClientRect();
-      const index = Math.min(Math.max(currentPageIndex() + delta, 0), pages.length - 1);
-      const pageRect = pages[index].getBoundingClientRect();
-      const top = Math.max(0, scrollRoot.scrollTop + pageRect.top - scrollRect.top - 12);
-      scrollRoot.scrollTo({ top, behavior: "smooth" });
-      resetSearch();
+      scrollToPageIndex(currentPageIndex() + delta);
     };
 
     form.addEventListener("submit", (event) => {
@@ -24908,6 +24942,30 @@ B) “Суккулент-прибойник” — толстые листья, 
     findUpButton.addEventListener("click", () => runFind("up"));
     prevPageButton.addEventListener("click", () => goToPage(-1));
     nextPageButton.addEventListener("click", () => goToPage(1));
+
+    scrollRoot.addEventListener("scroll", () => {
+      window.clearTimeout(scrollHashTimer);
+      scrollHashTimer = window.setTimeout(syncHashToCurrentPage, 120);
+    });
+
+    window.addEventListener("hashchange", () => {
+      const index = pageIndexFromHash();
+      if (index >= 0) {
+        scrollToPageIndex(index, "auto", false);
+      }
+    });
+
+    const openHashPage = () => {
+      const index = pageIndexFromHash();
+      if (index >= 0) {
+        scrollToPageIndex(index, "auto", false);
+      } else {
+        syncHashToCurrentPage();
+      }
+    };
+
+    openHashPage();
+    window.addEventListener("load", openHashPage, { once: true });
   })();
 </script>
 </body>

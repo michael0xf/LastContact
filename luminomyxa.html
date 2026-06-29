@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="«Luminamyxa» Михаила Кравченко — научно-фантастический текст о Лилит, рое, пещерах и чужих биосферах.">
+  <meta name="keywords" content="Luminamyxa, Люминамикса, Михаил Кравченко, Лилит, научная фантастика, sci-fi, Nyasha Planet">
+  <meta name="author" content="Михаил Кравченко">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="МИХАИЛ КРАВЧЕНКО - LUMINAMYXA">
+  <meta property="og:description" content="Научно-фантастический текст о Лилит, рое, пещерах и чужих биосферах.">
+  <meta property="og:url" content="/LastContact/luminomyxa.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="МИХАИЛ КРАВЧЕНКО - LUMINAMYXA">
+  <meta name="twitter:description" content="Научно-фантастический текст о Лилит, рое, пещерах и чужих биосферах.">
+  <script>
+    (() => {
+      const url = new URL(location.href);
+      if (url.search) {
+        url.search = "";
+        history.replaceState({}, "", url);
+      }
+    })();
+  </script>
+  <title>МИХАИЛ КРАВЧЕНКО - LUMINAMYXA</title>
+  <style>
+    html { background: #050607; color: #e8e8e8; }
+    body { margin: 0; padding: 0; font-family: Consolas, "Lucida Console", "Courier New", monospace; font-size: 16px; line-height: 1.42; }
+    .page-shell { width: 100%; min-height: 100vh; }
+    .toolbar-row { position: sticky; top: 0; z-index: 20; min-width: 0; background: #050607; border-bottom: 1px solid rgba(232, 232, 232, 0.18); }
+    .toolbar-cell { min-width: 0; }
+    .document-row, .document-cell { min-width: 0; }
+    .document-scroll { padding: 24px; box-sizing: border-box; }
+    main { max-width: 1180px; margin: 0 auto; }
+    .doc-page { padding-top: 4px; margin: 0 0 30px; }
+    .doc-page + .doc-page { border-top: 1px solid rgba(232, 232, 232, 0.12); padding-top: 10px; }
+    .page-label { text-align: center; font-size: inherit; line-height: inherit; color: #8d9298 !important; margin: 0 0 8px; }
+    pre { margin: 0; font: inherit; tab-size: 4; }
+    .text-block { white-space: pre-wrap; overflow-wrap: break-word; }
+    .align-center { text-align: center; }
+    .loading, .error { color: #8d9298; }
+    .error { color: #f2a7a7; }
+    .file-load { margin-top: 16px; color: #e8e8e8; }
+    .file-load input { display: block; max-width: 100%; margin-top: 8px; font: inherit; color: #e8e8e8; }
+    .find-bar { display: flex; gap: 6px; width: 100%; padding: 4px 8px; box-sizing: border-box; background: #050607; }
+    .find-bar input, .find-bar button { font: inherit; color: #e8e8e8; background: #101316; border: 1px solid rgba(232, 232, 232, 0.28); border-radius: 4px; }
+    .find-bar input { flex: 1 1 auto; min-width: 0; padding: 7px 9px; }
+    .find-bar button { flex: 0 0 auto; min-width: 48px; padding: 7px 10px; cursor: pointer; }
+    .find-bar input:focus, .find-bar button:focus { outline: 2px solid #8d9298; outline-offset: 2px; }
+    .find-bar button:hover { background: #171c20; }
+    @media print { body { background: #fff; color: #000; } .document-scroll { padding: 0; } .toolbar-row { display: none !important; } .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { color: #777 !important; } }
+    @media (max-width: 700px) { body { font-size: 14px; } .document-scroll { padding: 14px; } .doc-page { margin-bottom: 24px; } .find-bar { gap: 4px; padding: 4px; } .find-bar button { min-width: 40px; padding: 7px 6px; } }
+  </style>
+</head>
+<body>
+<div class="page-shell">
+<div class="toolbar-row">
+<div class="toolbar-cell">
+<form class="find-bar" data-find-form>
+  <button type="button" data-prev-page title="previous page" aria-label="previous page">↑§</button>
+  <button type="button" data-find-up title="find up" aria-label="find up">↑🔍</button>
+  <input data-find-input type="search" autocomplete="off" spellcheck="false" aria-label="find">
+  <button type="submit" data-find-down title="find down" aria-label="find down">🔎↓</button>
+  <button type="button" data-next-page title="next page" aria-label="next page">§↓</button>
+</form>
+</div>
+</div>
+<div class="document-row">
+<div class="document-cell">
+<div class="document-scroll" data-document-scroll>
+<main data-pages-root>
+<section class="doc-page" id="page-1" data-page="1">
+<div class="page-label">...</div>
+<pre class="text-block loading">Загрузка Luminamyxa.txt...</pre>
+</section>
+</main>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (() => {
+    const TEXT_URL = "Luminamyxa.txt";
+    const LINES_PER_PAGE = 34;
+
+    const form = document.querySelector("[data-find-form]");
+    const input = document.querySelector("[data-find-input]");
+    const prevPageButton = document.querySelector("[data-prev-page]");
+    const findUpButton = document.querySelector("[data-find-up]");
+    const nextPageButton = document.querySelector("[data-next-page]");
+    const root = document.querySelector("[data-pages-root]");
+    let pages = [];
+    let lastQuery = "";
+    let lastMatch = null;
+    let scrollHashTimer = 0;
+
+    const normalize = (value) => value.toLocaleLowerCase();
+    const toolbarOffset = () => Math.ceil(document.querySelector(".toolbar-row").getBoundingClientRect().height) + 12;
+
+    const scrollToTop = (top, behavior = "smooth") => {
+      try {
+        window.scrollTo({ top, behavior });
+      } catch (_) {
+        window.scrollTo(0, top);
+      }
+    };
+
+    const pageTop = (page) => {
+      const pageRect = page.getBoundingClientRect();
+      return Math.max(0, window.scrollY + pageRect.top - toolbarOffset());
+    };
+
+    const replacePageHash = (page) => {
+      if (!page?.dataset.page) return;
+      const hash = `#page-${page.dataset.page}`;
+      if (location.hash !== hash) {
+        history.replaceState({}, "", hash);
+      }
+    };
+
+    const pageForNode = (node) => {
+      const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+      return element?.closest(".doc-page") || null;
+    };
+
+    const pageIndexFromHash = () => {
+      const match = /^#page-(\d+)$/.exec(location.hash);
+      if (!match) return -1;
+      return pages.findIndex((page) => page.dataset.page === match[1]);
+    };
+
+    const textNodes = () => {
+      const nodes = [];
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.nodeValue) nodes.push(node);
+      }
+      return nodes;
+    };
+
+    const makeRange = (node, start, length) => {
+      const range = document.createRange();
+      range.setStart(node, start);
+      range.setEnd(node, start + length);
+      return range;
+    };
+
+    const selectRange = (range) => {
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      const rect = range.getBoundingClientRect();
+      const top = Math.max(0, window.scrollY + rect.top - window.innerHeight * 0.28);
+      scrollToTop(top);
+    };
+
+    const selectMatch = (query, node, start) => {
+      const range = makeRange(node, start, query.length);
+      lastMatch = {
+        query: normalize(query),
+        node,
+        start,
+        end: start + query.length
+      };
+      replacePageHash(pageForNode(node));
+      selectRange(range);
+      return true;
+    };
+
+    const findFirst = (query) => {
+      const needle = normalize(query);
+      for (const node of textNodes()) {
+        const haystack = node.nodeValue.toLocaleLowerCase();
+        const start = haystack.indexOf(needle);
+        if (start !== -1) return { node, start };
+      }
+      return false;
+    };
+
+    const findLast = (query) => {
+      const needle = normalize(query);
+      let last = null;
+      for (const node of textNodes()) {
+        const haystack = node.nodeValue.toLocaleLowerCase();
+        let start = 0;
+        while ((start = haystack.indexOf(needle, start)) !== -1) {
+          last = { node, start };
+          start += Math.max(query.length, 1);
+        }
+      }
+      return last;
+    };
+
+    const rangeTop = (node, start, length) => {
+      return makeRange(node, start, length).getBoundingClientRect().top;
+    };
+
+    const findFromViewport = (query, direction) => {
+      const needle = normalize(query);
+      const viewportTop = toolbarOffset() + 2;
+      let first = null;
+      let previous = null;
+      let last = null;
+
+      for (const node of textNodes()) {
+        const haystack = node.nodeValue.toLocaleLowerCase();
+        let start = 0;
+        while ((start = haystack.indexOf(needle, start)) !== -1) {
+          const match = { node, start };
+          const top = rangeTop(node, start, query.length);
+          if (!first) first = match;
+          last = match;
+
+          if (direction === "down" && top >= viewportTop) {
+            return match;
+          }
+          if (direction === "up") {
+            if (top < viewportTop) {
+              previous = match;
+            } else if (previous) {
+              return previous;
+            }
+          }
+
+          start += Math.max(query.length, 1);
+        }
+      }
+      return direction === "down" ? first : (previous || last);
+    };
+
+    const findAfterLast = (query) => {
+      const needle = normalize(query);
+      let afterLast = false;
+
+      for (const node of textNodes()) {
+        let start = 0;
+        if (!afterLast) {
+          if (!lastMatch || node !== lastMatch.node) continue;
+          afterLast = true;
+          start = lastMatch.end;
+        }
+        const haystack = node.nodeValue.toLocaleLowerCase();
+        while ((start = haystack.indexOf(needle, start)) !== -1) {
+          return { node, start };
+        }
+      }
+      return afterLast ? findFirst(query) : findFromViewport(query, "down");
+    };
+
+    const findBeforeLast = (query) => {
+      const needle = normalize(query);
+      let previous = null;
+
+      for (const node of textNodes()) {
+        const haystack = node.nodeValue.toLocaleLowerCase();
+        let start = 0;
+        while ((start = haystack.indexOf(needle, start)) !== -1) {
+          if (lastMatch && node === lastMatch.node && start >= lastMatch.start) {
+            return previous || findLast(query);
+          }
+          previous = { node, start };
+          start += Math.max(query.length, 1);
+        }
+      }
+      return lastMatch ? previous : findFromViewport(query, "up");
+    };
+
+    const runFind = (direction) => {
+      const query = input.value.trim();
+      if (!query) return;
+      const normalizedQuery = normalize(query);
+      const sameQuery = normalizedQuery === lastQuery && lastMatch && lastMatch.query === normalizedQuery;
+      const match = sameQuery
+        ? (direction === "down" ? findAfterLast(query) : findBeforeLast(query))
+        : findFromViewport(query, direction);
+
+      input.blur();
+      lastQuery = normalizedQuery;
+      if (match) {
+        selectMatch(query, match.node, match.start);
+      } else {
+        lastMatch = null;
+      }
+    };
+
+    const resetSearch = () => {
+      lastQuery = "";
+      lastMatch = null;
+    };
+
+    const currentPageIndex = () => {
+      if (!pages.length) return 0;
+      const marker = window.scrollY + toolbarOffset() + 16;
+      let currentIndex = 0;
+
+      for (let index = 0; index < pages.length; index++) {
+        const rect = pages[index].getBoundingClientRect();
+        const top = window.scrollY + rect.top;
+        if (top <= marker) {
+          currentIndex = index;
+        } else {
+          break;
+        }
+      }
+      return currentIndex;
+    };
+
+    const navigationPageIndex = () => {
+      const hashIndex = pageIndexFromHash();
+      return hashIndex >= 0 ? hashIndex : currentPageIndex();
+    };
+
+    const syncHashToCurrentPage = () => {
+      if (pages.length) replacePageHash(pages[currentPageIndex()]);
+    };
+
+    const scrollToPageIndex = (index, behavior = "smooth", shouldResetSearch = true) => {
+      if (!pages.length) return;
+      const safeIndex = Math.min(Math.max(index, 0), pages.length - 1);
+      const page = pages[safeIndex];
+      scrollToTop(pageTop(page), behavior);
+      replacePageHash(page);
+      if (shouldResetSearch) resetSearch();
+    };
+
+    const goToPage = (delta) => {
+      scrollToPageIndex(navigationPageIndex() + delta);
+    };
+
+    const renderPages = (rawText) => {
+      const normalized = rawText.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+      const lines = normalized.split("\n");
+      root.textContent = "";
+
+      for (let start = 0, pageNumber = 1; start < lines.length; start += LINES_PER_PAGE, pageNumber++) {
+        const section = document.createElement("section");
+        section.className = "doc-page";
+        section.id = `page-${pageNumber}`;
+        section.dataset.page = String(pageNumber);
+
+        const label = document.createElement("div");
+        label.className = "page-label";
+        label.textContent = String(pageNumber);
+
+        const pre = document.createElement("pre");
+        pre.className = "text-block";
+        pre.textContent = lines.slice(start, start + LINES_PER_PAGE).join("\n").replace(/\s+$/u, "");
+
+        section.append(label, pre);
+        root.append(section);
+      }
+
+      pages = Array.from(document.querySelectorAll(".doc-page"));
+      resetSearch();
+    };
+
+    const renderError = (error) => {
+      root.innerHTML = "";
+      const section = document.createElement("section");
+      section.className = "doc-page";
+      section.id = "page-1";
+      section.dataset.page = "1";
+      const label = document.createElement("div");
+      label.className = "page-label";
+      label.textContent = "!";
+      const pre = document.createElement("pre");
+      pre.className = "text-block error";
+      pre.textContent = `Не удалось загрузить ${TEXT_URL} автоматически.\n\nЕсли страница открыта как локальный файл, браузер может запрещать чтение соседнего txt. Для автоматической загрузки откройте папку через небольшой сервер:\npython -m http.server 8000\n\nИли выберите ${TEXT_URL} вручную ниже.\n\n${error}`;
+      const fallback = document.createElement("div");
+      fallback.className = "file-load";
+      fallback.textContent = "Загрузить текст вручную:";
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = ".txt,text/plain";
+      fileInput.addEventListener("change", async () => {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        const text = await file.text();
+        renderPages(text);
+        scrollToPageIndex(0, "auto", false);
+      });
+      fallback.append(fileInput);
+      section.append(label, pre, fallback);
+      root.append(section);
+      pages = [section];
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      runFind("down");
+    });
+
+    input.addEventListener("input", resetSearch);
+    findUpButton.addEventListener("click", () => runFind("up"));
+    prevPageButton.addEventListener("click", () => goToPage(-1));
+    nextPageButton.addEventListener("click", () => goToPage(1));
+
+    window.addEventListener("scroll", () => {
+      window.clearTimeout(scrollHashTimer);
+      scrollHashTimer = window.setTimeout(syncHashToCurrentPage, 120);
+    });
+
+    window.addEventListener("hashchange", () => {
+      const index = pageIndexFromHash();
+      if (index >= 0) {
+        scrollToPageIndex(index, "auto", false);
+      }
+    });
+
+    const openHashPage = () => {
+      const index = pageIndexFromHash();
+      if (index >= 0) {
+        scrollToPageIndex(index, "auto", false);
+      }
+    };
+
+    fetch(TEXT_URL, { cache: "no-cache" })
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
+        return response.text();
+      })
+      .then((text) => {
+        renderPages(text);
+        openHashPage();
+        window.addEventListener("load", openHashPage, { once: true });
+      })
+      .catch(renderError);
+  })();
+</script>
+</body>
+</html>

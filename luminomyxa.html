@@ -367,7 +367,7 @@
       label.textContent = "!";
       const pre = document.createElement("pre");
       pre.className = "text-block error";
-      pre.textContent = `Не удалось загрузить ${TEXT_URL} автоматически.\n\nЕсли страница открыта как локальный файл, браузер может запрещать чтение соседнего txt. Для автоматической загрузки откройте папку через небольшой сервер:\npython -m http.server 8000\n\nИли выберите ${TEXT_URL} вручную ниже.\n\n${error}`;
+      pre.textContent = "Если страница открыта как локальный файл, браузер может запрещать чтение соседнего txt.";
       const fallback = document.createElement("div");
       fallback.className = "file-load";
       fallback.textContent = "Загрузить текст вручную:";

@@ -37,7 +37,15 @@
     .doc-page + .doc-page { border-top: 1px solid rgba(232, 232, 232, 0.12); padding-top: 10px; }
     .page-label { text-align: center; font-size: inherit; line-height: inherit; color: #8d9298 !important; margin: 0 0 8px; }
     pre { margin: 0; font: inherit; tab-size: 4; }
-    .text-block { white-space: pre-wrap; overflow-wrap: break-word; }
+    .text-block { --line-gutter-width: 6ch; --line-gutter-gap: 1ch; white-space: pre-wrap; overflow-wrap: break-word; }
+    .text-block.line-numbered { white-space: normal; overflow-wrap: normal; }
+    .line-row { display: grid; grid-template-columns: var(--line-gutter-width) minmax(0, 1fr); column-gap: var(--line-gutter-gap); align-items: start; }
+    .line-number { position: relative; min-height: 1em; padding-right: 0.5ch; text-align: right; color: #535960; font-size: 0.78em; line-height: inherit; user-select: none; }
+    .line-number-value { position: relative; z-index: 1; }
+    .wrap-dot { position: absolute; right: 0.5ch; color: #444a51; }
+    .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
+    .line-content:empty::before { content: " "; }
+    .align-center .line-content { text-align: center; }
     .align-center { text-align: center; }
     .loading, .error { color: #8d9298; }
     .error { color: #f2a7a7; }
@@ -94,9 +102,89 @@
     let lastQuery = "";
     let lastMatch = null;
     let scrollHashTimer = 0;
+    let wrapIndicatorFrame = 0;
 
     const normalize = (value) => value.toLocaleLowerCase();
     const toolbarOffset = () => Math.ceil(document.querySelector(".toolbar-row").getBoundingClientRect().height) + 12;
+    const pageLabelText = (pageNumber) => `§ ${pageNumber}`;
+
+    const appendText = (element, text) => {
+      element.append(document.createTextNode(text));
+    };
+
+    const lineNumberedBlock = (block, firstLineNumber) => {
+      if (block.classList.contains("line-numbered")) return firstLineNumber;
+      const rawText = block.textContent;
+      const lines = rawText.split("\n");
+      block.textContent = "";
+      block.classList.add("line-numbered");
+
+      lines.forEach((line, index) => {
+        const row = document.createElement("span");
+        row.className = "line-row";
+
+        const number = document.createElement("span");
+        number.className = "line-number";
+        number.setAttribute("aria-hidden", "true");
+
+        const value = document.createElement("span");
+        value.className = "line-number-value";
+        value.textContent = String(firstLineNumber + index);
+        number.append(value);
+
+        const content = document.createElement("span");
+        content.className = "line-content";
+        appendText(content, line);
+
+        row.append(number, content);
+        block.append(row);
+      });
+
+      return firstLineNumber + lines.length;
+    };
+
+    const applyPageLabels = () => {
+      root.querySelectorAll(".doc-page").forEach((page) => {
+        const label = page.querySelector(".page-label");
+        if (label && page.dataset.page) label.textContent = pageLabelText(page.dataset.page);
+      });
+    };
+
+    const applyLineNumbers = () => {
+      let lineNumber = 1;
+      root.querySelectorAll(".text-block").forEach((block) => {
+        if (block.classList.contains("loading") || block.classList.contains("error")) return;
+        lineNumber = lineNumberedBlock(block, lineNumber);
+      });
+      scheduleWrapIndicators();
+    };
+
+    const updateWrapIndicators = () => {
+      root.querySelectorAll(".line-row").forEach((row) => {
+        const number = row.querySelector(".line-number");
+        const content = row.querySelector(".line-content");
+        if (!number || !content) return;
+        number.querySelectorAll(".wrap-dot").forEach((dot) => dot.remove());
+
+        const styles = window.getComputedStyle(content);
+        const lineHeight = Number.parseFloat(styles.lineHeight);
+        if (!Number.isFinite(lineHeight) || lineHeight <= 0) return;
+
+        const visualLines = Math.max(1, Math.round(content.getBoundingClientRect().height / lineHeight));
+        for (let line = 1; line < visualLines; line++) {
+          const dot = document.createElement("span");
+          dot.className = "wrap-dot";
+          dot.textContent = "·";
+          dot.style.top = `${line * lineHeight}px`;
+          number.append(dot);
+        }
+      });
+    };
+
+    const scheduleWrapIndicators = () => {
+      window.cancelAnimationFrame(wrapIndicatorFrame);
+      wrapIndicatorFrame = window.requestAnimationFrame(updateWrapIndicators);
+    };
 
     const scrollToTop = (top, behavior = "smooth") => {
       try {
@@ -132,7 +220,13 @@
 
     const textNodes = () => {
       const nodes = [];
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          return node.parentElement?.closest(".line-number")
+            ? NodeFilter.FILTER_REJECT
+            : NodeFilter.FILTER_ACCEPT;
+        }
+      });
       let node;
       while ((node = walker.nextNode())) {
         if (node.nodeValue) nodes.push(node);
@@ -342,7 +436,7 @@
 
         const label = document.createElement("div");
         label.className = "page-label";
-        label.textContent = String(pageNumber);
+        label.textContent = pageLabelText(pageNumber);
 
         const pre = document.createElement("pre");
         pre.className = "text-block";
@@ -353,6 +447,8 @@
       }
 
       pages = Array.from(document.querySelectorAll(".doc-page"));
+      applyPageLabels();
+      applyLineNumbers();
       resetSearch();
     };
 
@@ -401,6 +497,11 @@
       window.clearTimeout(scrollHashTimer);
       scrollHashTimer = window.setTimeout(syncHashToCurrentPage, 120);
     });
+
+    window.addEventListener("resize", scheduleWrapIndicators);
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(scheduleWrapIndicators).catch(() => {});
+    }
 
     window.addEventListener("hashchange", () => {
       const index = pageIndexFromHash();

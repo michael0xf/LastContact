@@ -24869,7 +24869,7 @@ B) “Суккулент-прибойник” — толстые листья, 
       const nodes = [];
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
         acceptNode(node) {
-          return node.parentElement?.closest(".line-number")
+          return node.parentElement?.closest(".wrap-dot")
             ? NodeFilter.FILTER_REJECT
             : NodeFilter.FILTER_ACCEPT;
         }

@@ -47,6 +47,9 @@
     .line-content:empty::before { content: " "; }
     .align-center .line-content { text-align: center; }
     .align-center { text-align: center; }
+    .image-block { width: calc(100vw - 48px); margin: 24px 0 30px 50%; transform: translateX(-50%); }
+    .image-block img { display: block; width: 100%; max-width: 100%; height: auto; margin: 0 auto; border: 0; }
+    .image-block.fit-height img { width: auto; max-width: 100%; object-fit: contain; }
     .loading, .error { color: #8d9298; }
     .error { color: #f2a7a7; }
     .file-load { margin-top: 16px; color: #e8e8e8; }
@@ -59,6 +62,8 @@
     .find-bar button:hover { background: #171c20; }
     @media print { body { background: #fff; color: #000; } .document-scroll { padding: 0; } .toolbar-row { display: none !important; } .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { color: #777 !important; } }
     @media (max-width: 700px) { body { font-size: 14px; } .document-scroll { padding: 14px; } .doc-page { margin-bottom: 24px; } .find-bar { gap: 4px; padding: 4px; } .find-bar button { min-width: 40px; padding: 7px 6px; } }
+    @media print { .image-block { width: 100%; margin-left: 0; transform: none; } }
+    @media (max-width: 700px) { .image-block { width: calc(100vw - 28px); margin-top: 20px; margin-bottom: 24px; } }
   </style>
 </head>
 <body>
@@ -107,13 +112,34 @@
     let lastMatch = null;
     let scrollHashTimer = 0;
     let wrapIndicatorFrame = 0;
+    let imageFitFrame = 0;
 
     const normalize = (value) => value.toLocaleLowerCase();
     const toolbarOffset = () => Math.ceil(document.querySelector(".toolbar-row").getBoundingClientRect().height) + 12;
     const pageLabelText = (pageNumber) => `§ ${pageNumber}`;
+    const imageLinePattern = /^\s*<img\s+([^>]*?)\/?>\s*$/iu;
+    const attributePattern = /([^\s=\/<>]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gu;
 
     const appendText = (element, text) => {
       element.append(document.createTextNode(text));
+    };
+
+    const parseImageLine = (line) => {
+      const match = imageLinePattern.exec(line);
+      if (!match) return null;
+
+      const attributes = {};
+      match[1].replace(attributePattern, (_, name, doubleQuoted, singleQuoted, bare) => {
+        attributes[name.toLocaleLowerCase()] = doubleQuoted ?? singleQuoted ?? bare ?? "";
+        return "";
+      });
+
+      const src = (attributes.src || "").trim();
+      if (!src) return null;
+      return {
+        src,
+        alt: attributes.alt || ""
+      };
     };
 
     const lineNumberedBlock = (block, firstLineNumber) => {
@@ -188,6 +214,38 @@
     const scheduleWrapIndicators = () => {
       window.cancelAnimationFrame(wrapIndicatorFrame);
       wrapIndicatorFrame = window.requestAnimationFrame(updateWrapIndicators);
+    };
+
+    const availableImageHeight = () => {
+      return Math.max(180, window.innerHeight - toolbarOffset() - 64);
+    };
+
+    const fitImageBlock = (block) => {
+      const image = block.querySelector("img");
+      if (!image || !image.naturalWidth || !image.naturalHeight) return;
+
+      const availableWidth = block.getBoundingClientRect().width;
+      const heightByWidth = availableWidth * image.naturalHeight / image.naturalWidth;
+      const maxHeight = availableImageHeight();
+
+      if (heightByWidth > maxHeight) {
+        block.classList.add("fit-height");
+        image.style.width = "auto";
+        image.style.height = `${maxHeight}px`;
+      } else {
+        block.classList.remove("fit-height");
+        image.style.width = "";
+        image.style.height = "";
+      }
+    };
+
+    const fitAllImages = () => {
+      root.querySelectorAll(".image-block").forEach(fitImageBlock);
+    };
+
+    const scheduleImageFits = () => {
+      window.cancelAnimationFrame(imageFitFrame);
+      imageFitFrame = window.requestAnimationFrame(fitAllImages);
     };
 
     const scrollToTop = (top, behavior = "smooth") => {
@@ -443,32 +501,80 @@
       resetSearch();
     };
 
+    const createPage = (pageNumber) => {
+      const section = document.createElement("section");
+      section.className = "doc-page";
+      section.id = `page-${pageNumber}`;
+      section.dataset.page = String(pageNumber);
+
+      const label = document.createElement("div");
+      label.className = "page-label";
+      label.textContent = pageLabelText(pageNumber);
+      section.append(label);
+
+      return section;
+    };
+
+    const appendTextPage = (pageNumber, lines) => {
+      const section = createPage(pageNumber);
+      const pre = document.createElement("pre");
+      pre.className = "text-block";
+      pre.textContent = lines.join("\n").replace(/\s+$/u, "");
+      section.append(pre);
+      root.append(section);
+    };
+
+    const appendImagePage = (pageNumber, image) => {
+      const section = createPage(pageNumber);
+      const block = document.createElement("div");
+      block.className = "image-block";
+
+      const element = document.createElement("img");
+      element.src = image.src;
+      element.alt = image.alt;
+      element.loading = "lazy";
+      element.decoding = "async";
+      element.addEventListener("load", scheduleImageFits);
+
+      block.append(element);
+      section.append(block);
+      root.append(section);
+      if (element.complete) scheduleImageFits();
+    };
+
     const renderPages = (rawText) => {
       const normalized = rawText.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
       const lines = normalized.split("\n");
       root.textContent = "";
 
-      for (let start = 0, pageNumber = 1; start < lines.length; start += LINES_PER_PAGE, pageNumber++) {
-        const section = document.createElement("section");
-        section.className = "doc-page";
-        section.id = `page-${pageNumber}`;
-        section.dataset.page = String(pageNumber);
+      let pageNumber = 1;
+      let textLines = [];
 
-        const label = document.createElement("div");
-        label.className = "page-label";
-        label.textContent = pageLabelText(pageNumber);
+      const flushTextPage = () => {
+        if (!textLines.length) return;
+        appendTextPage(pageNumber, textLines);
+        pageNumber += 1;
+        textLines = [];
+      };
 
-        const pre = document.createElement("pre");
-        pre.className = "text-block";
-        pre.textContent = lines.slice(start, start + LINES_PER_PAGE).join("\n").replace(/\s+$/u, "");
+      for (const line of lines) {
+        const image = parseImageLine(line);
+        if (image) {
+          flushTextPage();
+          appendImagePage(pageNumber, image);
+          pageNumber += 1;
+          continue;
+        }
 
-        section.append(label, pre);
-        root.append(section);
+        textLines.push(line);
+        if (textLines.length >= LINES_PER_PAGE) flushTextPage();
       }
+      flushTextPage();
 
       pages = Array.from(document.querySelectorAll(".doc-page"));
       applyPageLabels();
       applyLineNumbers();
+      scheduleImageFits();
       resetSearch();
     };
 
@@ -520,7 +626,10 @@
       scrollHashTimer = window.setTimeout(syncHashToCurrentPage, 120);
     });
 
-    window.addEventListener("resize", scheduleWrapIndicators);
+    window.addEventListener("resize", () => {
+      scheduleWrapIndicators();
+      scheduleImageFits();
+    });
     if (document.fonts?.ready) {
       document.fonts.ready.then(scheduleWrapIndicators).catch(() => {});
     }

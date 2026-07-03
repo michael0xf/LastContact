@@ -42,7 +42,6 @@
     .line-row { display: grid; grid-template-columns: var(--line-gutter-width) minmax(0, 1fr); column-gap: var(--line-gutter-gap); align-items: start; }
     .line-number { position: relative; min-height: 1em; padding-right: 0.5ch; text-align: right; color: #535960; font-size: 0.78em; line-height: inherit; user-select: none; }
     .line-number-value { position: relative; z-index: 1; }
-    .wrap-dot { position: absolute; right: 0.5ch; color: #444a51; }
     .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
     .line-content:empty::before { content: " "; }
     .align-center .line-content { text-align: center; }
@@ -111,7 +110,6 @@
     let lastQuery = "";
     let lastMatch = null;
     let scrollHashTimer = 0;
-    let wrapIndicatorFrame = 0;
     let imageFitFrame = 0;
 
     const normalize = (value) => value.toLocaleLowerCase();
@@ -186,34 +184,6 @@
         if (block.classList.contains("loading") || block.classList.contains("error")) return;
         lineNumber = lineNumberedBlock(block, lineNumber);
       });
-      scheduleWrapIndicators();
-    };
-
-    const updateWrapIndicators = () => {
-      root.querySelectorAll(".line-row").forEach((row) => {
-        const number = row.querySelector(".line-number");
-        const content = row.querySelector(".line-content");
-        if (!number || !content) return;
-        number.querySelectorAll(".wrap-dot").forEach((dot) => dot.remove());
-
-        const styles = window.getComputedStyle(content);
-        const lineHeight = Number.parseFloat(styles.lineHeight);
-        if (!Number.isFinite(lineHeight) || lineHeight <= 0) return;
-
-        const visualLines = Math.max(1, Math.round(content.getBoundingClientRect().height / lineHeight));
-        for (let line = 1; line < visualLines; line++) {
-          const dot = document.createElement("span");
-          dot.className = "wrap-dot";
-          dot.textContent = "·";
-          dot.style.top = `${line * lineHeight}px`;
-          number.append(dot);
-        }
-      });
-    };
-
-    const scheduleWrapIndicators = () => {
-      window.cancelAnimationFrame(wrapIndicatorFrame);
-      wrapIndicatorFrame = window.requestAnimationFrame(updateWrapIndicators);
     };
 
     const availableImageHeight = () => {
@@ -282,13 +252,7 @@
 
     const textNodes = () => {
       const nodes = [];
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-        acceptNode(node) {
-          return node.parentElement?.closest(".wrap-dot")
-            ? NodeFilter.FILTER_REJECT
-            : NodeFilter.FILTER_ACCEPT;
-        }
-      });
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
       let node;
       while ((node = walker.nextNode())) {
         if (node.nodeValue) nodes.push(node);
@@ -627,11 +591,10 @@
     });
 
     window.addEventListener("resize", () => {
-      scheduleWrapIndicators();
       scheduleImageFits();
     });
     if (document.fonts?.ready) {
-      document.fonts.ready.then(scheduleWrapIndicators).catch(() => {});
+      document.fonts.ready.then(scheduleImageFits).catch(() => {});
     }
 
     window.addEventListener("hashchange", () => {

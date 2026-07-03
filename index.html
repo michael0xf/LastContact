@@ -104,9 +104,11 @@
 <div class="toolbar-cell">
 <form class="find-bar" data-find-form>
   <button type="button" data-prev-page title="previous page" aria-label="previous page">↑§</button>
+  <button type="button" data-half-page-up title="half screen up" aria-label="half screen up">↑▭</button>
   <button type="button" data-find-up title="find up" aria-label="find up">↑🔍</button>
   <input data-find-input type="search" autocomplete="off" spellcheck="false" aria-label="find">
   <button type="submit" data-find-down title="find down" aria-label="find down">🔎↓</button>
+  <button type="button" data-half-page-down title="half screen down" aria-label="half screen down">▭↓</button>
   <button type="button" data-next-page title="next page" aria-label="next page">§↓</button>
 </form>
 </div>
@@ -24742,7 +24744,9 @@ B) “Суккулент-прибойник” — толстые листья, 
     const form = document.querySelector("[data-find-form]");
     const input = document.querySelector("[data-find-input]");
     const prevPageButton = document.querySelector("[data-prev-page]");
+    const halfPageUpButton = document.querySelector("[data-half-page-up]");
     const findUpButton = document.querySelector("[data-find-up]");
+    const halfPageDownButton = document.querySelector("[data-half-page-down]");
     const nextPageButton = document.querySelector("[data-next-page]");
     const root = document.querySelector("main");
     const pages = Array.from(document.querySelectorAll(".doc-page"));
@@ -25068,6 +25072,22 @@ B) “Суккулент-прибойник” — толстые листья, 
       scrollToPageIndex(navigationPageIndex() + delta);
     };
 
+    const maxScrollTop = () => {
+      const documentHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+      return Math.max(0, documentHeight - window.innerHeight);
+    };
+
+    const halfScreenStep = () => {
+      return Math.max(120, (window.innerHeight - toolbarOffset()) * 0.5);
+    };
+
+    const scrollByHalfScreen = (direction) => {
+      const nextTop = window.scrollY + direction * halfScreenStep();
+      const clampedTop = Math.min(Math.max(nextTop, 0), maxScrollTop());
+      scrollToTop(clampedTop);
+      resetSearch();
+    };
+
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       runFind("down");
@@ -25076,6 +25096,8 @@ B) “Суккулент-прибойник” — толстые листья, 
     input.addEventListener("input", resetSearch);
     findUpButton.addEventListener("click", () => runFind("up"));
     prevPageButton.addEventListener("click", () => goToPage(-1));
+    halfPageUpButton.addEventListener("click", () => scrollByHalfScreen(-1));
+    halfPageDownButton.addEventListener("click", () => scrollByHalfScreen(1));
     nextPageButton.addEventListener("click", () => goToPage(1));
 
     window.addEventListener("scroll", () => {

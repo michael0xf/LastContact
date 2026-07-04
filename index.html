@@ -60,44 +60,48 @@
     }
   </script>
   <style>
-    html { background: #050607; color: #e8e8e8; }
+    html { background: #050607; color: #e8e8e8; overflow-y: scroll; scrollbar-gutter: stable; scrollbar-width: auto; scrollbar-color: #8d9298 #050607; }
+    ::-webkit-scrollbar { width: 18px; height: 18px; }
+    ::-webkit-scrollbar-track { background: #050607; }
+    ::-webkit-scrollbar-thumb { background: #8d9298; border: 3px solid #050607; border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: #b3b8be; }
     body { margin: 0; padding: 0; font-family: Consolas, "Lucida Console", "Courier New", monospace; font-size: 16px; line-height: 1.42; }
     .page-shell { width: 100%; min-height: 100vh; }
     .toolbar-row { position: sticky; top: 0; z-index: 20; min-width: 0; background: #050607; border-bottom: 1px solid rgba(232, 232, 232, 0.18); }
     .toolbar-cell { min-width: 0; }
     .document-row, .document-cell { min-width: 0; }
-    .document-scroll { padding: 24px; box-sizing: border-box; }
+    .document-scroll { padding: 8px; box-sizing: border-box; }
     main { max-width: 1180px; margin: 0 auto; }
-    .doc-page { padding-top: 4px; margin: 0 0 30px; }
-    .doc-page + .doc-page { border-top: 1px solid rgba(232, 232, 232, 0.12); padding-top: 10px; }
-    .page-label { text-align: center; font-size: inherit; line-height: inherit; color: #8d9298 !important; margin: 0 0 8px; }
+    .doc-page { padding-top: 0; margin: 0 0 8px; }
+    .doc-page + .doc-page { border-top: 1px solid rgba(232, 232, 232, 0.12); padding-top: 4px; }
+    .page-label { text-align: center; font-size: 0.78em; line-height: inherit; color: #8d9298 !important; margin: 0 0 2px; }
     pre { margin: 0; font: inherit; tab-size: 4; }
-    .text-block { --line-gutter-width: 6ch; --line-gutter-gap: 1ch; white-space: pre-wrap; overflow-wrap: break-word; }
+    .text-block { --line-gutter-width: 6ch; --line-gutter-gap: 0.5ch; white-space: pre-wrap; overflow-wrap: break-word; }
     .text-block.line-numbered { white-space: normal; overflow-wrap: normal; }
     .line-row { display: grid; grid-template-columns: var(--line-gutter-width) minmax(0, 1fr); column-gap: var(--line-gutter-gap); align-items: start; }
-    .line-number { position: relative; min-height: 1em; padding-right: 0.5ch; text-align: right; color: #535960; font-size: 0.78em; line-height: inherit; user-select: none; }
+    .line-number { position: relative; min-height: 1em; padding-right: 0.25ch; text-align: right; color: #535960; font-size: 0.78em; line-height: inherit; user-select: none; }
     .line-number-value { position: relative; z-index: 1; }
     .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
     .line-content:empty::before { content: " "; }
     .align-center .line-content { text-align: center; }
     .align-center { text-align: center; }
-    .image-block { width: calc(100vw - 48px); margin: 24px 0 30px 50%; transform: translateX(-50%); }
+    .image-block { width: calc(100vw - 16px); margin: 8px 0 10px 50%; transform: translateX(-50%); }
     .image-block img { display: block; width: 100%; max-width: 100%; height: auto; margin: 0 auto; border: 0; }
     .image-block.fit-height img { width: auto; max-width: 100%; object-fit: contain; }
     .loading, .error { color: #8d9298; }
     .error { color: #f2a7a7; }
-    .file-load { margin-top: 16px; color: #e8e8e8; }
-    .file-load input { display: block; max-width: 100%; margin-top: 8px; font: inherit; color: #e8e8e8; }
-    .find-bar { display: flex; gap: 6px; width: 100%; padding: 4px 8px; box-sizing: border-box; background: #050607; }
+    .file-load { margin-top: 8px; color: #e8e8e8; }
+    .file-load input { display: block; max-width: 100%; margin-top: 4px; font: inherit; color: #e8e8e8; }
+    .find-bar { display: flex; gap: 4px; width: 100%; padding: 2px 4px; box-sizing: border-box; background: #050607; }
     .find-bar input, .find-bar button { font: inherit; color: #e8e8e8; background: #101316; border: 1px solid rgba(232, 232, 232, 0.28); border-radius: 4px; }
-    .find-bar input { flex: 1 1 auto; min-width: 0; padding: 7px 9px; }
-    .find-bar button { flex: 0 0 auto; min-width: 48px; padding: 7px 10px; cursor: pointer; }
+    .find-bar input { flex: 1 1 auto; min-width: 0; padding: 5px 7px; }
+    .find-bar button { flex: 0 0 auto; min-width: 42px; padding: 5px 8px; cursor: pointer; }
     .find-bar input:focus, .find-bar button:focus { outline: 2px solid #8d9298; outline-offset: 2px; }
     .find-bar button:hover { background: #171c20; }
     @media print { body { background: #fff; color: #000; } .document-scroll { padding: 0; } .toolbar-row { display: none !important; } .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { color: #777 !important; } }
-    @media (max-width: 700px) { body { font-size: 14px; } .document-scroll { padding: 14px; } .doc-page { margin-bottom: 24px; } .find-bar { gap: 4px; padding: 4px; } .find-bar button { min-width: 40px; padding: 7px 6px; } }
+    @media (max-width: 700px) { body { font-size: 14px; } .document-scroll { padding: 6px; } .doc-page { margin-bottom: 8px; } .find-bar { gap: 2px; padding: 2px; } .find-bar button { min-width: 36px; padding: 5px 4px; } }
     @media print { .image-block { width: 100%; margin-left: 0; transform: none; } }
-    @media (max-width: 700px) { .image-block { width: calc(100vw - 28px); margin-top: 20px; margin-bottom: 24px; } }
+    @media (max-width: 700px) { .image-block { width: calc(100vw - 12px); margin-top: 8px; margin-bottom: 10px; } }
   </style>
 </head>
 <body>
@@ -105,13 +109,13 @@
 <div class="toolbar-row">
 <div class="toolbar-cell">
 <form class="find-bar" data-find-form>
-  <button type="button" data-prev-page title="previous page" aria-label="previous page">↑§</button>
+  <button type="button" data-prev-page title="previous page" aria-label="previous page">⎗</button>
   <button type="button" data-half-page-up title="half screen up" aria-label="half screen up">↑▭</button>
   <button type="button" data-find-up title="find up" aria-label="find up">↑🔍</button>
   <input data-find-input type="search" autocomplete="off" spellcheck="false" aria-label="find">
   <button type="submit" data-find-down title="find down" aria-label="find down">🔎↓</button>
   <button type="button" data-half-page-down title="half screen down" aria-label="half screen down">▭↓</button>
-  <button type="button" data-next-page title="next page" aria-label="next page">§↓</button>
+  <button type="button" data-next-page title="next page" aria-label="next page">⎘</button>
 </form>
 </div>
 </div>
@@ -148,8 +152,8 @@
     let imageFitFrame = 0;
 
     const normalize = (value) => value.toLocaleLowerCase();
-    const toolbarOffset = () => Math.ceil(document.querySelector(".toolbar-row").getBoundingClientRect().height) + 12;
-    const pageLabelText = (pageNumber) => `§ ${pageNumber}`;
+    const toolbarOffset = () => Math.ceil(document.querySelector(".toolbar-row").getBoundingClientRect().height) + 4;
+    const pageLabelText = (pageNumber) => `page ${pageNumber}`;
     const imageLinePattern = /^\s*<img\s+([^>]*?)\/?>\s*$/iu;
     const attributePattern = /([^\s=\/<>]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gu;
 
@@ -222,7 +226,7 @@
     };
 
     const availableImageHeight = () => {
-      return Math.max(180, window.innerHeight - toolbarOffset() - 64);
+      return Math.max(180, window.innerHeight - toolbarOffset() - 24);
     };
 
     const fitImageBlock = (block) => {
@@ -447,7 +451,7 @@
 
     const currentPageIndex = () => {
       if (!pages.length) return 0;
-      const marker = window.scrollY + toolbarOffset() + 16;
+      const marker = window.scrollY + toolbarOffset() + 6;
       let currentIndex = 0;
 
       for (let index = 0; index < pages.length; index++) {

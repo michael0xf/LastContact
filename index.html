@@ -61,9 +61,11 @@
   </script>
   <style>
     html { background: #050607; color: #e8e8e8; overflow-y: scroll; scrollbar-gutter: stable; scrollbar-width: auto; scrollbar-color: #8d9298 #050607; }
-    ::-webkit-scrollbar { width: 18px; height: 18px; }
+    ::-webkit-scrollbar { width: 30px; height: 10px; }
+    ::-webkit-scrollbar:vertical { width: 30px; }
+    ::-webkit-scrollbar:horizontal { height: 10px; }
     ::-webkit-scrollbar-track { background: #050607; }
-    ::-webkit-scrollbar-thumb { background: #8d9298; border: 3px solid #050607; border-radius: 8px; }
+    ::-webkit-scrollbar-thumb { background: #8d9298; border: 2px solid #050607; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #b3b8be; }
     body { margin: 0; padding: 0; font-family: Consolas, "Lucida Console", "Courier New", monospace; font-size: 16px; line-height: 1.42; }
     .page-shell { width: 100%; min-height: 100vh; }

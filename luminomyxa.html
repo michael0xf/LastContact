@@ -26,12 +26,16 @@
   <title>МИХАИЛ КРАВЧЕНКО - LUMINAMYXA</title>
   <style>
     html { background: #050607; color: #e8e8e8; overflow-y: scroll; scrollbar-gutter: stable; scrollbar-width: auto; scrollbar-color: #8d9298 #050607; }
-    ::-webkit-scrollbar { width: 30px; height: 10px; }
-    ::-webkit-scrollbar:vertical { width: 30px; }
-    ::-webkit-scrollbar:horizontal { height: 10px; }
-    ::-webkit-scrollbar-track { background: #050607; }
-    ::-webkit-scrollbar-thumb { background: #8d9298; border: 2px solid #050607; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #b3b8be; }
+    ::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 32px; height: 12px; }
+    ::-webkit-scrollbar:vertical, html::-webkit-scrollbar:vertical, body::-webkit-scrollbar:vertical { width: 32px; }
+    ::-webkit-scrollbar:horizontal, html::-webkit-scrollbar:horizontal, body::-webkit-scrollbar:horizontal { height: 12px; }
+    ::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track { background: #050607; }
+    ::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb { background: #8d9298; border: 1px solid #050607; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover, html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover { background: #b3b8be; }
+    @media (pointer: coarse) {
+      ::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 36px; height: 12px; }
+      ::-webkit-scrollbar:vertical, html::-webkit-scrollbar:vertical, body::-webkit-scrollbar:vertical { width: 36px; }
+    }
     body { margin: 0; padding: 0; font-family: Consolas, "Lucida Console", "Courier New", monospace; font-size: 16px; line-height: 1.42; }
     .page-shell { width: 100%; min-height: 100vh; }
     .toolbar-row { position: sticky; top: 0; z-index: 20; min-width: 0; background: #050607; border-bottom: 1px solid rgba(232, 232, 232, 0.18); }
@@ -78,11 +82,11 @@
 <div class="toolbar-cell">
 <form class="find-bar" data-find-form>
   <button type="button" data-prev-page title="previous page" aria-label="previous page">⎗</button>
-  <button type="button" data-half-page-up title="half screen up" aria-label="half screen up">↑▭</button>
+  <button type="button" data-half-page-up title="three quarter screen up" aria-label="three quarter screen up">↑▭</button>
   <button type="button" data-find-up title="find up" aria-label="find up">↑🔍</button>
   <input data-find-input type="search" autocomplete="off" spellcheck="false" aria-label="find">
   <button type="submit" data-find-down title="find down" aria-label="find down">🔎↓</button>
-  <button type="button" data-half-page-down title="half screen down" aria-label="half screen down">▭↓</button>
+  <button type="button" data-half-page-down title="three quarter screen down" aria-label="three quarter screen down">▭↓</button>
   <button type="button" data-next-page title="next page" aria-label="next page">⎘</button>
 </form>
 </div>
@@ -461,12 +465,12 @@
       return Math.max(0, documentHeight - window.innerHeight);
     };
 
-    const halfScreenStep = () => {
-      return Math.max(120, (window.innerHeight - toolbarOffset()) * 0.5);
+    const screenStep = () => {
+      return Math.max(120, (window.innerHeight - toolbarOffset()) * 0.75);
     };
 
-    const scrollByHalfScreen = (direction) => {
-      const nextTop = window.scrollY + direction * halfScreenStep();
+    const scrollByScreenStep = (direction) => {
+      const nextTop = window.scrollY + direction * screenStep();
       const clampedTop = Math.min(Math.max(nextTop, 0), maxScrollTop());
       scrollToTop(clampedTop);
       resetSearch();
@@ -588,8 +592,8 @@
     input.addEventListener("input", resetSearch);
     findUpButton.addEventListener("click", () => runFind("up"));
     prevPageButton.addEventListener("click", () => goToPage(-1));
-    halfPageUpButton.addEventListener("click", () => scrollByHalfScreen(-1));
-    halfPageDownButton.addEventListener("click", () => scrollByHalfScreen(1));
+    halfPageUpButton.addEventListener("click", () => scrollByScreenStep(-1));
+    halfPageDownButton.addEventListener("click", () => scrollByScreenStep(1));
     nextPageButton.addEventListener("click", () => goToPage(1));
 
     window.addEventListener("scroll", () => {

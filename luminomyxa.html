@@ -125,6 +125,7 @@
 
     const normalize = (value) => value.toLocaleLowerCase();
     const toolbarOffset = () => Math.ceil(document.querySelector(".toolbar-row").getBoundingClientRect().height) + 4;
+    const viewportHeight = () => Math.floor(window.visualViewport?.height || document.documentElement.clientHeight || window.innerHeight);
     const pageLabelText = (pageNumber) => `page ${pageNumber}`;
     const imageLinePattern = /^\s*<img\s+([^>]*?)\/?>\s*$/iu;
     const attributePattern = /([^\s=\/<>]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gu;
@@ -198,7 +199,7 @@
     };
 
     const availableImageHeight = () => {
-      return Math.max(180, window.innerHeight - toolbarOffset() - 24);
+      return Math.max(180, viewportHeight() - toolbarOffset() - 24);
     };
 
     const fitImageBlock = (block) => {
@@ -283,7 +284,7 @@
       selection.removeAllRanges();
       selection.addRange(range);
       const rect = range.getBoundingClientRect();
-      const top = Math.max(0, window.scrollY + rect.top - window.innerHeight * 0.28);
+      const top = Math.max(0, window.scrollY + rect.top - viewportHeight() * 0.28);
       scrollToTop(top);
     };
 
@@ -462,11 +463,11 @@
 
     const maxScrollTop = () => {
       const documentHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
-      return Math.max(0, documentHeight - window.innerHeight);
+      return Math.max(0, documentHeight - viewportHeight());
     };
 
     const screenStep = () => {
-      return Math.max(120, (window.innerHeight - toolbarOffset()) * 0.75);
+      return Math.max(1, viewportHeight() - toolbarOffset()) * 0.75;
     };
 
     const scrollByScreenStep = (direction) => {

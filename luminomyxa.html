@@ -27,32 +27,33 @@
   </script>
   <title>МИХАИЛ КРАВЧЕНКО - LUMINAMYXA</title>
   <style>
-    html { background: #050607; color: #e8e8e8; overflow-y: scroll; scrollbar-gutter: stable; scrollbar-width: auto; scrollbar-color: #8d9298 #050607; }
+    html { background: #02091d; color: cyan; overflow-y: scroll; scrollbar-gutter: stable; scrollbar-width: auto; scrollbar-color: #72849b #02091d; }
     ::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 32px; height: 12px; }
     ::-webkit-scrollbar:vertical, html::-webkit-scrollbar:vertical, body::-webkit-scrollbar:vertical { width: 32px; }
     ::-webkit-scrollbar:horizontal, html::-webkit-scrollbar:horizontal, body::-webkit-scrollbar:horizontal { height: 12px; }
-    ::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track { background: #050607; }
-    ::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb { background: #8d9298; border: 1px solid #050607; border-radius: 10px; }
+    ::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track { background: #02091d; }
+    ::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb { background: #72849b; border: 1px solid #02091d; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover, html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover { background: #b3b8be; }
     @media (pointer: coarse) {
       ::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 36px; height: 12px; }
       ::-webkit-scrollbar:vertical, html::-webkit-scrollbar:vertical, body::-webkit-scrollbar:vertical { width: 36px; }
     }
-    body { margin: 0; padding: 0; font-family: Consolas, "Lucida Console", "Courier New", monospace; font-size: 16px; line-height: 1.42; }
-    .page-shell { width: 100%; min-height: 100vh; }
-    .toolbar-row { position: sticky; top: 0; z-index: 20; min-width: 0; background: #050607; border-bottom: 1px solid rgba(232, 232, 232, 0.18); }
+    body { margin: 0; padding: 0; background: #02091d; color: cyan; font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size: 16px; font-weight: 500; line-height: 1.42; }
+    .fractal-background { position: fixed; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+    .page-shell { position: relative; z-index: 1; width: 100%; min-height: 100vh; background: rgba(2, 9, 29, 0.32); }
+    .toolbar-row { position: sticky; top: 0; z-index: 20; min-width: 0; background: rgba(2, 9, 29, 0.96); border-bottom: 1px solid rgba(232, 232, 232, 0.18); }
     .toolbar-cell { min-width: 0; }
     .document-row, .document-cell { min-width: 0; }
     .document-scroll { padding: 8px; box-sizing: border-box; }
     main { max-width: 1180px; margin: 0 auto; }
     .doc-page { content-visibility: auto; padding-top: 0; margin: 0 0 8px; }
     .doc-page + .doc-page { border-top: 1px solid rgba(232, 232, 232, 0.12); padding-top: 4px; }
-    .page-label { text-align: center; font-size: 0.78em; line-height: inherit; color: #8d9298 !important; margin: 0 0 2px; }
+    .page-label { text-align: center; font-size: 0.78em; line-height: inherit; color: cyan !important; margin: 0 0 2px; opacity: 0.62; }
     pre { margin: 0; font: inherit; tab-size: 4; }
     .text-block { --line-gutter-width: 6ch; --line-gutter-gap: 0.5ch; white-space: pre-wrap; overflow-wrap: break-word; }
     .text-block.line-numbered { white-space: normal; overflow-wrap: normal; }
     .line-row { display: grid; grid-template-columns: var(--line-gutter-width) minmax(0, 1fr); column-gap: var(--line-gutter-gap); align-items: start; }
-    .line-number { position: relative; min-height: 1em; padding-right: 0.25ch; text-align: right; color: #535960; font-size: 0.78em; line-height: inherit; user-select: none; }
+    .line-number { position: relative; min-height: 1em; padding-right: 0.25ch; text-align: right; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; user-select: none; }
     .line-number-value { position: relative; z-index: 1; }
     .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
     .line-content:empty::before { content: " "; }
@@ -61,24 +62,24 @@
     .image-block { width: calc(100vw - 16px); margin: 8px 0 10px 50%; transform: translateX(-50%); }
     .image-block img { display: block; width: 100%; max-width: 100%; height: auto; margin: 0 auto; border: 0; }
     .image-block.fit-height img { width: auto; max-width: 100%; object-fit: contain; }
-    .loading, .error { color: #8d9298; }
-    .error { color: #f2a7a7; }
-    .file-load { margin-top: 8px; color: #e8e8e8; }
-    .file-load input { display: block; max-width: 100%; margin-top: 4px; font: inherit; color: #e8e8e8; }
-    .find-bar { display: flex; gap: 4px; width: 100%; padding: 2px 4px; box-sizing: border-box; background: #050607; }
-    .find-bar input, .find-bar button { font: inherit; color: #e8e8e8; background: #101316; border: 1px solid rgba(232, 232, 232, 0.28); border-radius: 4px; }
+    .loading, .error { color: cyan; }
+    .file-load { margin-top: 8px; color: cyan; }
+    .file-load input { display: block; max-width: 100%; margin-top: 4px; font: inherit; color: cyan; }
+    .find-bar { display: flex; gap: 4px; width: 100%; padding: 2px 4px; box-sizing: border-box; background: transparent; }
+    .find-bar input, .find-bar button { font: inherit; color: cyan; background: #101316; border: 1px solid rgba(0, 255, 255, 0.36); border-radius: 4px; }
     .find-bar input { flex: 1 1 auto; min-width: 0; padding: 5px 7px; }
     .find-bar button { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; min-width: 42px; height: 34px; box-sizing: border-box; padding: 5px 8px; cursor: pointer; }
     .find-bar [data-prev-page], .find-bar [data-next-page] { font-size: 1.6em; line-height: 1; padding-top: 0; padding-bottom: 0; }
-    .find-bar input:focus, .find-bar button:focus { outline: 2px solid #8d9298; outline-offset: 2px; }
+    .find-bar input:focus, .find-bar button:focus { outline: 2px solid cyan; outline-offset: 2px; }
     .find-bar button:hover { background: #171c20; }
-    @media print { body { background: #fff; color: #000; } .document-scroll { padding: 0; } .toolbar-row { display: none !important; } .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { color: #777 !important; } }
+    @media print { body { background: #fff; color: #000; } .fractal-background { display: none; } .page-shell { background: transparent; } .document-scroll { padding: 0; } .toolbar-row { display: none !important; } .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { color: #777 !important; } }
     @media (max-width: 700px) { body { font-size: 14px; } .document-scroll { padding: 6px; } .doc-page { margin-bottom: 8px; } .find-bar { gap: 2px; padding: 2px; } .find-bar button { min-width: 36px; height: 32px; padding: 5px 4px; } .find-bar [data-prev-page], .find-bar [data-next-page] { padding-top: 0; padding-bottom: 0; } }
     @media print { .image-block { width: 100%; margin-left: 0; transform: none; } }
     @media (max-width: 700px) { .image-block { width: calc(100vw - 12px); margin-top: 8px; margin-bottom: 10px; } }
   </style>
 </head>
 <body>
+<canvas class="fractal-background" data-fractal-background aria-hidden="true"></canvas>
 <div class="page-shell">
 <div class="toolbar-row">
 <div class="toolbar-cell">
@@ -106,6 +107,83 @@
 </div>
 </div>
 </div>
+<script>
+  (() => {
+    const canvas = document.querySelector("[data-fractal-background]");
+    const context = canvas.getContext("2d", { alpha: false });
+    const MAX_PIXELS = 560000;
+    const MAX_ITERATIONS = 96;
+    let resizeTimer = 0;
+
+    const drawMandelbrot = () => {
+      const cssWidth = Math.max(1, window.innerWidth);
+      const cssHeight = Math.max(1, window.innerHeight);
+      const pixelScale = Math.min(
+        window.devicePixelRatio || 1,
+        Math.sqrt(MAX_PIXELS / (cssWidth * cssHeight))
+      );
+      const width = Math.max(1, Math.round(cssWidth * pixelScale));
+      const height = Math.max(1, Math.round(cssHeight * pixelScale));
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const image = context.createImageData(width, height);
+      const pixels = image.data;
+      const centerX = -0.62;
+      const centerY = 0;
+      const spanX = 3.15;
+      const spanY = spanX * height / width;
+
+      for (let y = 0; y < height; y += 1) {
+        const cImaginary = centerY + (y / height - 0.5) * spanY;
+
+        for (let x = 0; x < width; x += 1) {
+          const cReal = centerX + (x / width - 0.5) * spanX;
+          let zReal = 0;
+          let zImaginary = 0;
+          let iteration = 0;
+
+          // Z(n + 1) = Z(n)^2 + C
+          while (
+            zReal * zReal + zImaginary * zImaginary <= 4 &&
+            iteration < MAX_ITERATIONS
+          ) {
+            const nextReal = zReal * zReal - zImaginary * zImaginary + cReal;
+            zImaginary = 2 * zReal * zImaginary + cImaginary;
+            zReal = nextReal;
+            iteration += 1;
+          }
+
+          const offset = (y * width + x) * 4;
+          if (iteration === MAX_ITERATIONS) {
+            pixels[offset] = 5;
+            pixels[offset + 1] = 15;
+            pixels[offset + 2] = 38;
+          } else {
+            const intensity = Math.pow(iteration / MAX_ITERATIONS, 0.46);
+            pixels[offset] = 2 + Math.round(18 * intensity);
+            pixels[offset + 1] = 12 + Math.round(74 * intensity);
+            pixels[offset + 2] = 42 + Math.round(170 * intensity);
+          }
+          pixels[offset + 3] = 255;
+        }
+      }
+
+      context.putImageData(image, 0, 0);
+    };
+
+    const scheduleDraw = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        window.requestAnimationFrame(drawMandelbrot);
+      }, 160);
+    };
+
+    window.requestAnimationFrame(drawMandelbrot);
+    window.addEventListener("resize", scheduleDraw);
+  })();
+</script>
 <script>
   (() => {
     const TEXT_URL = "Luminamyxa.txt";
@@ -158,10 +236,11 @@
       if (block.classList.contains("line-numbered")) return firstLineNumber;
       const rawText = block.textContent;
       const lines = rawText.split("\n");
+      let nextLineNumber = firstLineNumber;
       block.textContent = "";
       block.classList.add("line-numbered");
 
-      lines.forEach((line, index) => {
+      lines.forEach((line) => {
         const row = document.createElement("span");
         row.className = "line-row";
 
@@ -171,7 +250,10 @@
 
         const value = document.createElement("span");
         value.className = "line-number-value";
-        value.textContent = String(firstLineNumber + index);
+        if (line.trim()) {
+          value.textContent = String(nextLineNumber);
+          nextLineNumber += 1;
+        }
         number.append(value);
 
         const content = document.createElement("span");
@@ -182,7 +264,7 @@
         block.append(row);
       });
 
-      return firstLineNumber + lines.length;
+      return nextLineNumber;
     };
 
     const applyPageLabels = () => {

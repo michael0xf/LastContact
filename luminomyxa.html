@@ -494,10 +494,10 @@
         const value = document.createElement("span");
         value.className = "line-number-value";
         if (line.trim()) {
-          const paragraphNumber = String(nextLineNumber);
-          value.textContent = paragraphNumber;
-          row.id = `paragraph-${paragraphNumber}`;
-          row.dataset.paragraph = paragraphNumber;
+          const lineNumber = String(nextLineNumber);
+          value.textContent = lineNumber;
+          row.id = `line-${lineNumber}`;
+          row.dataset.line = lineNumber;
           nextLineNumber += 1;
         }
         number.append(value);
@@ -578,60 +578,60 @@
       return element?.closest(".doc-page") || null;
     };
 
-    const paragraphRowForNode = (node) => {
+    const lineRowForNode = (node) => {
       const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
-      return element?.closest(".line-row[data-paragraph]") || null;
+      return element?.closest(".line-row[data-line]") || null;
     };
 
-    const paragraphRowsForPage = (page) => {
-      return page ? Array.from(page.querySelectorAll(".line-row[data-paragraph]")) : [];
+    const lineRowsForPage = (page) => {
+      return page ? Array.from(page.querySelectorAll(".line-row[data-line]")) : [];
     };
 
-    const closestParagraphRow = (page, requestedParagraph) => {
-      const rows = paragraphRowsForPage(page);
+    const closestLineRow = (page, requestedLine) => {
+      const rows = lineRowsForPage(page);
       if (!rows.length) return null;
-      if (!Number.isInteger(requestedParagraph) || requestedParagraph < 1) return rows[0];
+      if (!Number.isInteger(requestedLine) || requestedLine < 1) return rows[0];
 
       return rows.reduce((closest, row) => {
-        const closestNumber = Number(closest.dataset.paragraph);
-        const rowNumber = Number(row.dataset.paragraph);
-        const closestDistance = Math.abs(closestNumber - requestedParagraph);
-        const rowDistance = Math.abs(rowNumber - requestedParagraph);
+        const closestNumber = Number(closest.dataset.line);
+        const rowNumber = Number(row.dataset.line);
+        const closestDistance = Math.abs(closestNumber - requestedLine);
+        const rowDistance = Math.abs(rowNumber - requestedLine);
         return rowDistance < closestDistance ? row : closest;
       });
     };
 
-    const paragraphNumberForNode = (node) => {
-      const row = paragraphRowForNode(node);
-      return row ? Number(row.dataset.paragraph) : null;
+    const lineNumberForNode = (node) => {
+      const row = lineRowForNode(node);
+      return row ? Number(row.dataset.line) : null;
     };
 
     const locationFromHash = () => {
-      const pageMatch = /^#page-(\d+)(?:-paragraph-(\d+))?$/.exec(location.hash);
+      const pageMatch = /^#page-(\d+)(?:-(?:line|paragraph)-(\d+))?$/.exec(location.hash);
       if (pageMatch) {
         return {
           pageNumber: pageMatch[1],
-          paragraphNumber: pageMatch[2] ? Number(pageMatch[2]) : null
+          lineNumber: pageMatch[2] ? Number(pageMatch[2]) : null
         };
       }
 
-      const paragraphMatch = /^#paragraph-(\d+)$/.exec(location.hash);
-      if (paragraphMatch) {
+      const lineMatch = /^#(?:line|paragraph)-(\d+)$/.exec(location.hash);
+      if (lineMatch) {
         return {
           pageNumber: null,
-          paragraphNumber: Number(paragraphMatch[1])
+          lineNumber: Number(lineMatch[1])
         };
       }
       return null;
     };
 
-    const replacePageHash = (page, paragraphNumber = null) => {
+    const replacePageHash = (page, lineNumber = null) => {
       if (!page?.dataset.page) return;
-      const validParagraph = Number.isInteger(paragraphNumber) && paragraphNumber > 0
-        ? paragraphNumber
+      const validLine = Number.isInteger(lineNumber) && lineNumber > 0
+        ? lineNumber
         : null;
-      const hash = validParagraph
-        ? `#page-${page.dataset.page}-paragraph-${validParagraph}`
+      const hash = validLine
+        ? `#page-${page.dataset.page}-line-${validLine}`
         : `#page-${page.dataset.page}`;
       if (location.hash !== hash) {
         history.replaceState({}, "", hash);
@@ -645,8 +645,8 @@
         return pages.findIndex((page) => page.dataset.page === target.pageNumber);
       }
 
-      const paragraphRow = closestParagraphRow(root, target.paragraphNumber);
-      const page = paragraphRow?.closest(".doc-page");
+      const lineRow = closestLineRow(root, target.lineNumber);
+      const page = lineRow?.closest(".doc-page");
       return page ? pages.indexOf(page) : -1;
     };
 
@@ -684,7 +684,7 @@
         start,
         end: start + query.length
       };
-      replacePageHash(pageForNode(node), paragraphNumberForNode(node));
+      replacePageHash(pageForNode(node), lineNumberForNode(node));
       selectRange(range);
       return true;
     };
@@ -832,8 +832,8 @@
       return hashIndex >= 0 ? hashIndex : currentPageIndex();
     };
 
-    const currentParagraphNumber = (page) => {
-      const rows = paragraphRowsForPage(page);
+    const currentLineNumber = (page) => {
+      const rows = lineRowsForPage(page);
       if (!rows.length) return null;
       const marker = window.scrollY + toolbarOffset() + 6;
       let currentRow = rows[0];
@@ -846,33 +846,33 @@
           break;
         }
       }
-      return Number(currentRow.dataset.paragraph);
+      return Number(currentRow.dataset.line);
     };
 
     const syncHashToCurrentPage = () => {
       if (!pages.length) return;
       const page = pages[currentPageIndex()];
-      replacePageHash(page, currentParagraphNumber(page));
+      replacePageHash(page, currentLineNumber(page));
     };
 
     const scrollToPageIndex = (
       index,
       behavior = "smooth",
       shouldResetSearch = true,
-      requestedParagraph = null
+      requestedLine = null
     ) => {
       if (!pages.length) return;
       const safeIndex = Math.min(Math.max(index, 0), pages.length - 1);
       const page = pages[safeIndex];
-      const paragraphRow = Number.isInteger(requestedParagraph)
-        ? closestParagraphRow(page, requestedParagraph)
+      const lineRow = Number.isInteger(requestedLine)
+        ? closestLineRow(page, requestedLine)
         : null;
-      const destination = paragraphRow || page;
-      const actualParagraph = paragraphRow
-        ? Number(paragraphRow.dataset.paragraph)
-        : Number(closestParagraphRow(page, null)?.dataset.paragraph) || null;
+      const destination = lineRow || page;
+      const actualLine = lineRow
+        ? Number(lineRow.dataset.line)
+        : Number(closestLineRow(page, null)?.dataset.line) || null;
       scrollToTop(pageTop(destination), behavior);
-      replacePageHash(page, actualParagraph);
+      replacePageHash(page, actualLine);
       if (shouldResetSearch) resetSearch();
     };
 
@@ -1032,7 +1032,7 @@
       const target = locationFromHash();
       const index = pageIndexFromHash();
       if (index >= 0) {
-        scrollToPageIndex(index, "auto", false, target?.paragraphNumber);
+        scrollToPageIndex(index, "auto", false, target?.lineNumber);
       }
     };
 

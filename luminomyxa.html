@@ -46,6 +46,7 @@
     .document-row, .document-cell { min-width: 0; }
     .document-scroll { padding: 8px; box-sizing: border-box; }
     main { max-width: 1180px; margin: 0 auto; }
+    main::after { content: ""; display: block; height: calc(100vh - 3rem); }
     .doc-page { content-visibility: auto; padding-top: 0; margin: 0 0 8px; }
     .doc-page + .doc-page { border-top: 1px solid rgba(232, 232, 232, 0.12); padding-top: 4px; }
     .page-label { text-align: center; font-size: 0.78em; line-height: inherit; color: cyan !important; margin: 0 0 2px; opacity: 0.62; }
@@ -72,7 +73,7 @@
     .find-bar [data-prev-page], .find-bar [data-next-page] { font-size: 1.6em; line-height: 1; padding-top: 0; padding-bottom: 0; }
     .find-bar input:focus, .find-bar button:focus { outline: 2px solid cyan; outline-offset: 2px; }
     .find-bar button:hover { background: #171c20; }
-    @media print { body { background: #fff; color: #000; } .fractal-background { display: none; } .page-shell { background: transparent; } .document-scroll { padding: 0; } .toolbar-row { display: none !important; } .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { color: #777 !important; } }
+    @media print { body { background: #fff; color: #000; } .fractal-background { display: none; } .page-shell { background: transparent; } .document-scroll { padding: 0; } .toolbar-row { display: none !important; } main::after { display: none; } .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { color: #777 !important; } }
     @media (max-width: 700px) { body { font-size: 14px; } .document-scroll { padding: 6px; } .doc-page { margin-bottom: 8px; } .find-bar { gap: 2px; padding: 2px; } .find-bar button { min-width: 36px; height: 32px; padding: 5px 4px; } .find-bar [data-prev-page], .find-bar [data-next-page] { padding-top: 0; padding-bottom: 0; } }
     @media print { .image-block { width: 100%; margin-left: 0; transform: none; } }
     @media (max-width: 700px) { .image-block { width: calc(100vw - 12px); margin-top: 8px; margin-bottom: 10px; } }
@@ -493,7 +494,10 @@
         const value = document.createElement("span");
         value.className = "line-number-value";
         if (line.trim()) {
-          value.textContent = String(nextLineNumber);
+          const paragraphNumber = String(nextLineNumber);
+          value.textContent = paragraphNumber;
+          row.id = `paragraph-${paragraphNumber}`;
+          row.dataset.paragraph = paragraphNumber;
           nextLineNumber += 1;
         }
         number.append(value);
@@ -569,23 +573,81 @@
       return Math.max(0, window.scrollY + pageRect.top - toolbarOffset());
     };
 
-    const replacePageHash = (page) => {
-      if (!page?.dataset.page) return;
-      const hash = `#page-${page.dataset.page}`;
-      if (location.hash !== hash) {
-        history.replaceState({}, "", hash);
-      }
-    };
-
     const pageForNode = (node) => {
       const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
       return element?.closest(".doc-page") || null;
     };
 
+    const paragraphRowForNode = (node) => {
+      const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+      return element?.closest(".line-row[data-paragraph]") || null;
+    };
+
+    const paragraphRowsForPage = (page) => {
+      return page ? Array.from(page.querySelectorAll(".line-row[data-paragraph]")) : [];
+    };
+
+    const closestParagraphRow = (page, requestedParagraph) => {
+      const rows = paragraphRowsForPage(page);
+      if (!rows.length) return null;
+      if (!Number.isInteger(requestedParagraph) || requestedParagraph < 1) return rows[0];
+
+      return rows.reduce((closest, row) => {
+        const closestNumber = Number(closest.dataset.paragraph);
+        const rowNumber = Number(row.dataset.paragraph);
+        const closestDistance = Math.abs(closestNumber - requestedParagraph);
+        const rowDistance = Math.abs(rowNumber - requestedParagraph);
+        return rowDistance < closestDistance ? row : closest;
+      });
+    };
+
+    const paragraphNumberForNode = (node) => {
+      const row = paragraphRowForNode(node);
+      return row ? Number(row.dataset.paragraph) : null;
+    };
+
+    const locationFromHash = () => {
+      const pageMatch = /^#page-(\d+)(?:-paragraph-(\d+))?$/.exec(location.hash);
+      if (pageMatch) {
+        return {
+          pageNumber: pageMatch[1],
+          paragraphNumber: pageMatch[2] ? Number(pageMatch[2]) : null
+        };
+      }
+
+      const paragraphMatch = /^#paragraph-(\d+)$/.exec(location.hash);
+      if (paragraphMatch) {
+        return {
+          pageNumber: null,
+          paragraphNumber: Number(paragraphMatch[1])
+        };
+      }
+      return null;
+    };
+
+    const replacePageHash = (page, paragraphNumber = null) => {
+      if (!page?.dataset.page) return;
+      const validParagraph = Number.isInteger(paragraphNumber) && paragraphNumber > 0
+        ? paragraphNumber
+        : null;
+      const hash = validParagraph
+        ? `#page-${page.dataset.page}-paragraph-${validParagraph}`
+        : `#page-${page.dataset.page}`;
+      if (location.hash !== hash) {
+        history.replaceState({}, "", hash);
+      }
+    };
+
     const pageIndexFromHash = () => {
-      const match = /^#page-(\d+)$/.exec(location.hash);
-      if (!match) return -1;
-      return pages.findIndex((page) => page.dataset.page === match[1]);
+      const target = locationFromHash();
+      if (!target) return -1;
+      if (target.pageNumber) {
+        return pages.findIndex((page) => page.dataset.page === target.pageNumber);
+      }
+
+      const paragraphRow = closestParagraphRow(root, target.paragraphNumber);
+      const page = paragraphRow?.closest(".doc-page");
+      return page ? pages.indexOf(page) : -1;
     };
 
     const textNodes = () => {
@@ -622,7 +684,7 @@
         start,
         end: start + query.length
       };
-      replacePageHash(pageForNode(node));
+      replacePageHash(pageForNode(node), paragraphNumberForNode(node));
       selectRange(range);
       return true;
     };
@@ -770,16 +832,47 @@
       return hashIndex >= 0 ? hashIndex : currentPageIndex();
     };
 
-    const syncHashToCurrentPage = () => {
-      if (pages.length) replacePageHash(pages[currentPageIndex()]);
+    const currentParagraphNumber = (page) => {
+      const rows = paragraphRowsForPage(page);
+      if (!rows.length) return null;
+      const marker = window.scrollY + toolbarOffset() + 6;
+      let currentRow = rows[0];
+
+      for (const row of rows) {
+        const rowTop = window.scrollY + row.getBoundingClientRect().top;
+        if (rowTop <= marker) {
+          currentRow = row;
+        } else {
+          break;
+        }
+      }
+      return Number(currentRow.dataset.paragraph);
     };
 
-    const scrollToPageIndex = (index, behavior = "smooth", shouldResetSearch = true) => {
+    const syncHashToCurrentPage = () => {
+      if (!pages.length) return;
+      const page = pages[currentPageIndex()];
+      replacePageHash(page, currentParagraphNumber(page));
+    };
+
+    const scrollToPageIndex = (
+      index,
+      behavior = "smooth",
+      shouldResetSearch = true,
+      requestedParagraph = null
+    ) => {
       if (!pages.length) return;
       const safeIndex = Math.min(Math.max(index, 0), pages.length - 1);
       const page = pages[safeIndex];
-      scrollToTop(pageTop(page), behavior);
-      replacePageHash(page);
+      const paragraphRow = Number.isInteger(requestedParagraph)
+        ? closestParagraphRow(page, requestedParagraph)
+        : null;
+      const destination = paragraphRow || page;
+      const actualParagraph = paragraphRow
+        ? Number(paragraphRow.dataset.paragraph)
+        : Number(closestParagraphRow(page, null)?.dataset.paragraph) || null;
+      scrollToTop(pageTop(destination), behavior);
+      replacePageHash(page, actualParagraph);
       if (shouldResetSearch) resetSearch();
     };
 
@@ -935,19 +1028,22 @@
       document.fonts.ready.then(scheduleImageFits).catch(() => {});
     }
 
-    window.addEventListener("hashchange", () => {
+    const scrollToHashTarget = () => {
+      const target = locationFromHash();
       const index = pageIndexFromHash();
       if (index >= 0) {
-        scrollToPageIndex(index, "auto", false);
-      }
-    });
-
-    const openHashPage = () => {
-      const index = pageIndexFromHash();
-      if (index >= 0) {
-        scrollToPageIndex(index, "auto", false);
+        scrollToPageIndex(index, "auto", false, target?.paragraphNumber);
       }
     };
+
+    const openHashPage = () => {
+      scrollToHashTarget();
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(scrollToHashTarget);
+      });
+    };
+
+    window.addEventListener("hashchange", openHashPage);
 
     fetch(TEXT_URL, { cache: "no-cache" })
       .then((response) => {

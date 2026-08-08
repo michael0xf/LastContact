@@ -3,7 +3,7 @@
 
   const LINES_PER_PAGE = 34;
   const COLOR_COUNT = 7;
-  const VIEWER_VERSION = 1;
+  const VIEWER_VERSION = 2;
   let started = false;
 
   const styleText = `
@@ -26,6 +26,8 @@
     .line-number-value { position: relative; z-index: 1; }
     .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
     .line-content-no-wrap { white-space: pre; overflow-wrap: normal; word-break: normal; }
+    .line-content.align-center { text-align: center; }
+    .line-content.align-right { text-align: right; }
     .line-content:empty::before { content: " "; }
     .align-center .line-content { text-align: center; }
     .align-center { text-align: center; }
@@ -229,6 +231,16 @@
       element.append(document.createTextNode(text));
     };
 
+    const parseTextLine = (line) => {
+      const centerMatch = /^\s*<center>([\s\S]*?)<\/center>\s*$/iu.exec(line);
+      if (centerMatch) return { text: centerMatch[1], alignment: "center" };
+
+      const rightMatch = /^\s*<p\s+align\s*=\s*["']right["']\s*>([\s\S]*?)<\/p>\s*$/iu.exec(line);
+      if (rightMatch) return { text: rightMatch[1], alignment: "right" };
+
+      return { text: line, alignment: "" };
+    };
+
     const lineNumberedBlock = (block, firstLineNumber) => {
       if (block.classList.contains("line-numbered")) return firstLineNumber;
       const lines = block.textContent.split("\n");
@@ -237,6 +249,8 @@
       block.classList.add("line-numbered");
 
       lines.forEach((line) => {
+        const parsedLine = parseTextLine(line);
+        const displayLine = parsedLine.text;
         const row = document.createElement("span");
         row.className = "line-row";
 
@@ -246,7 +260,7 @@
 
         const value = document.createElement("span");
         value.className = "line-number-value";
-        if (line.trim()) {
+        if (displayLine.trim()) {
           const lineNumber = nextLineNumber;
           value.textContent = lineNumber;
           row.id = `line-${lineNumber}`;
@@ -259,10 +273,11 @@
 
         const content = document.createElement("span");
         content.className = "line-content";
-        if (line.trimStart().startsWith("|")) {
+        if (parsedLine.alignment) content.classList.add(`align-${parsedLine.alignment}`);
+        if (displayLine.trimStart().startsWith("|")) {
           content.classList.add("line-content-no-wrap");
         }
-        appendText(content, line);
+        appendText(content, displayLine);
 
         row.append(number, content);
         block.append(row);

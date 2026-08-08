@@ -54,6 +54,7 @@
     .text-block { --line-gutter-width: 6ch; --line-gutter-gap: 0.5ch; white-space: pre-wrap; overflow-wrap: break-word; }
     .text-block.line-numbered { white-space: normal; overflow-wrap: normal; }
     .line-row { display: grid; grid-template-columns: var(--line-gutter-width) minmax(0, 1fr); column-gap: var(--line-gutter-gap); align-items: start; }
+    .line-row-even .line-content { color: lightgreen; }
     .line-number { position: relative; min-height: 1em; padding-right: 0.25ch; text-align: right; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; user-select: none; }
     .line-number-value { position: relative; z-index: 1; }
     .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
@@ -494,10 +495,14 @@
         const value = document.createElement("span");
         value.className = "line-number-value";
         if (line.trim()) {
-          const lineNumber = String(nextLineNumber);
+          const lineNumber = nextLineNumber;
+          const lineNumberText = String(lineNumber);
           value.textContent = lineNumber;
-          row.id = `line-${lineNumber}`;
-          row.dataset.line = lineNumber;
+          row.id = `line-${lineNumberText}`;
+          row.dataset.line = lineNumberText;
+          if (lineNumber % 2 === 0) {
+            row.classList.add("line-row-even");
+          }
           nextLineNumber += 1;
         }
         number.append(value);

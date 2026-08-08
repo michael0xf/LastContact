@@ -3,7 +3,7 @@
 
   const LINES_PER_PAGE = 34;
   const COLOR_COUNT = 7;
-  const VIEWER_VERSION = 2;
+  const VIEWER_VERSION = 3;
   let started = false;
 
   const styleText = `
@@ -34,6 +34,12 @@
     body[data-hide-page-dividers] .doc-page { margin-bottom: 0; }
     body[data-hide-page-dividers] .doc-page + .doc-page { border-top: 0; padding-top: 0; }
     body[data-hide-page-dividers] .page-label { display: none; }
+    .toolbar-row {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
     .viewer-version { color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; text-align: right; padding-right: 0.25ch; user-select: none; }
     .loading, .error, .file-load { color: cyan; }
     .file-load { margin-top: 8px; }

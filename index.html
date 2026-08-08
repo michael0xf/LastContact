@@ -82,21 +82,23 @@
     .document-scroll { padding: 8px; box-sizing: border-box; }
     main { max-width: 1180px; margin: 0 auto; }
     main::after { content: ""; display: block; height: calc(100vh - 3rem); }
-    .doc-page { padding-top: 0; margin: 0 0 8px; }
-    .doc-page + .doc-page { border-top: 1px solid rgba(232, 232, 232, 0.12); padding-top: 4px; }
-    .page-label { text-align: center; font-size: 0.78em; line-height: inherit; color: cyan !important; margin: 0 0 2px; opacity: 0.62; }
+    .doc-page { padding-top: 0; margin: 0; }
+    .doc-page + .doc-page { border-top: 0; padding-top: 0; }
+    .page-label { display: none; }
+    .viewer-version { max-width: 1180px; margin: 0 auto; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; text-align: right; padding: 0 0.25ch; user-select: none; }
     pre { margin: 0; font: inherit; tab-size: 4; }
     .text-block { --line-gutter-width: 6ch; --line-gutter-gap: 0.5ch; white-space: pre-wrap; overflow-wrap: break-word; }
     .text-block.line-numbered { white-space: normal; overflow-wrap: normal; }
     .line-row { display: grid; grid-template-columns: var(--line-gutter-width) minmax(0, 1fr); column-gap: var(--line-gutter-gap); align-items: start; }
     .line-row-even .line-content { color: lightgreen; }
-    .line-row-color-0 .line-content { color: #ffcc80; }
+    .line-row-color-0 .line-content { color: #ffcc99; }
     .line-row-color-1 .line-content { color: lightpink; }
-    .line-row-color-2 .line-content { color: #ffee80; }
+    .line-row-color-2 .line-content { color: #ffee99; }
     .line-row-color-3 .line-content { color: lightgreen; }
     .line-row-color-4 .line-content { color: lightyellow; }
     .line-row-color-5 .line-content { color: cyan; }
     .line-row-color-6 .line-content { color: #ffddee; }
+    .align-right .line-content { text-align: right; }
     .line-number { position: relative; min-height: 1em; padding-right: 0.25ch; text-align: right; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; user-select: none; }
     .line-number-value { position: relative; z-index: 1; }
     .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
@@ -117,13 +119,13 @@
     .find-bar [data-prev-page], .find-bar [data-next-page] { font-size: 1.6em; line-height: 1; padding-top: 0; padding-bottom: 0; }
     .find-bar input:focus, .find-bar button:focus { outline: 2px solid cyan; outline-offset: 2px; }
     .find-bar button:hover { background: #171c20; }
-    @media print { body { background: #fff; color: #000; } .fractal-background { display: none; } .page-shell { background: transparent; } .document-scroll { padding: 0; } .toolbar-row { display: none !important; } main::after { display: none; } .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { color: #777 !important; } }
+    @media print { body { background: #fff; color: #000; } .fractal-background { display: none; } .page-shell { background: transparent; } .document-scroll { padding: 0; } .toolbar-row { display: none !important; } main::after { display: none; } .doc-page { break-after: auto; page-break-after: auto; border-top: 0 !important; margin-bottom: 0; } .doc-page:last-child { break-after: auto; page-break-after: auto; } .page-label { display: none; } }
     @media (max-width: 700px) { body { font-size: 14px; } .document-scroll { padding: 6px; } .doc-page { margin-bottom: 8px; } .find-bar { gap: 2px; padding: 2px; } .find-bar button { min-width: 36px; height: 32px; padding: 5px 4px; } .find-bar [data-prev-page], .find-bar [data-next-page] { padding-top: 0; padding-bottom: 0; } }
     @media print { .image-block { width: 100%; margin-left: 0; transform: none; } }
     @media (max-width: 700px) { .image-block { width: calc(100vw - 12px); margin-top: 8px; margin-bottom: 10px; } }
   </style>
 </head>
-<body data-text-url="LastContact_autowrap.txt" data-hide-page-dividers>
+<body>
 <canvas class="fractal-background" data-fractal-background aria-hidden="true"></canvas>
 <div class="page-shell">
 <div class="toolbar-row">
@@ -142,6 +144,7 @@
 <div class="document-row">
 <div class="document-cell">
 <div class="document-scroll" data-document-scroll>
+<div class="viewer-version">v1</div>
 <main data-pages-root>
 <section class="doc-page" id="page-1" data-page="1">
 <div class="page-label">...</div>
@@ -152,10 +155,8 @@
 </div>
 </div>
 </div>
-<script src="text-viewer.js"></script>
 <script>
   (() => {
-    if (window.TextViewerLibrary) return;
     const canvas = document.querySelector("[data-fractal-background]");
     const gl = canvas.getContext("webgl", {
       alpha: true,
@@ -475,7 +476,6 @@
 </script>
 <script>
   (() => {
-    if (window.TextViewerLibrary) return;
     const TEXT_URL = "LastContact_autowrap.txt";
     const LINES_PER_PAGE = 34;
 
@@ -522,6 +522,16 @@
       };
     };
 
+    const parseTextLine = (line) => {
+      const centerMatch = /^\s*<center>([\s\S]*?)<\/center>\s*$/iu.exec(line);
+      if (centerMatch) return { text: centerMatch[1], alignment: "center" };
+
+      const rightMatch = /^\s*<p\s+align\s*=\s*["']right["']\s*>([\s\S]*?)<\/p>\s*$/iu.exec(line);
+      if (rightMatch) return { text: rightMatch[1], alignment: "right" };
+
+      return { text: line, alignment: "" };
+    };
+
     const lineNumberedBlock = (block, firstLineNumber) => {
       if (block.classList.contains("line-numbered")) return firstLineNumber;
       const rawText = block.textContent;
@@ -531,8 +541,11 @@
       block.classList.add("line-numbered");
 
       lines.forEach((line) => {
+        const parsedLine = parseTextLine(line);
+        const displayLine = parsedLine.text;
         const row = document.createElement("span");
         row.className = "line-row";
+        if (parsedLine.alignment) row.classList.add(`align-${parsedLine.alignment}`);
 
         const number = document.createElement("span");
         number.className = "line-number";
@@ -540,7 +553,7 @@
 
         const value = document.createElement("span");
         value.className = "line-number-value";
-        if (line.trim()) {
+        if (displayLine.trim()) {
           const lineNumber = nextLineNumber;
           const lineNumberText = String(lineNumber);
           value.textContent = lineNumber;
@@ -556,8 +569,8 @@
 
         const content = document.createElement("span");
         content.className = "line-content";
-        if (line.trimStart().startsWith("|")) content.classList.add("line-content-no-wrap");
-        appendText(content, line);
+        if (displayLine.trimStart().startsWith("|")) content.classList.add("line-content-no-wrap");
+        appendText(content, displayLine);
 
         row.append(number, content);
         block.append(row);
@@ -694,13 +707,15 @@
     const pageIndexFromHash = () => {
       const target = locationFromHash();
       if (!target) return -1;
+      if (target.lineNumber) {
+        const lineRow = closestLineRow(root, target.lineNumber);
+        const linePage = lineRow?.closest(".doc-page");
+        if (linePage) return pages.indexOf(linePage);
+      }
       if (target.pageNumber) {
         return pages.findIndex((page) => page.dataset.page === target.pageNumber);
       }
-
-      const lineRow = closestLineRow(root, target.lineNumber);
-      const page = lineRow?.closest(".doc-page");
-      return page ? pages.indexOf(page) : -1;
+      return -1;
     };
 
     const textNodes = () => {

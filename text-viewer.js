@@ -3,6 +3,7 @@
 
   const LINES_PER_PAGE = 34;
   const COLOR_COUNT = 7;
+  const VIEWER_VERSION = 1;
   let started = false;
 
   const styleText = `
@@ -31,18 +32,7 @@
     body[data-hide-page-dividers] .doc-page { margin-bottom: 0; }
     body[data-hide-page-dividers] .doc-page + .doc-page { border-top: 0; padding-top: 0; }
     body[data-hide-page-dividers] .page-label { display: none; }
-    @media (max-width: 700px), (pointer: coarse) {
-      .toolbar-row {
-        position: fixed !important;
-        top: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-      }
-      .document-scroll {
-        padding-top: calc(var(--text-viewer-toolbar-height, 40px) + 4px) !important;
-      }
-    }
+    .viewer-version { color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; text-align: right; padding-right: 0.25ch; user-select: none; }
     .loading, .error, .file-load { color: cyan; }
     .file-load { margin-top: 8px; }
     .file-load input { display: block; max-width: 100%; margin-top: 4px; font: inherit; color: cyan; }
@@ -135,6 +125,7 @@
     const centerLocation = gl.getUniformLocation(program, "center");
     const spanLocation = gl.getUniformLocation(program, "span");
     let frame = 0;
+    let scrollIdleTimer = 0;
 
     const draw = () => {
       frame = 0;
@@ -174,7 +165,10 @@
     const schedule = () => {
       if (!frame) frame = global.requestAnimationFrame(draw);
     };
-    global.addEventListener("scroll", schedule, { passive: true });
+    global.addEventListener("scroll", () => {
+      global.clearTimeout(scrollIdleTimer);
+      scrollIdleTimer = global.setTimeout(schedule, 300);
+    }, { passive: true });
     global.addEventListener("resize", schedule);
     schedule();
   };
@@ -204,16 +198,10 @@
     let lastMatch = null;
     let scrollHashTimer = 0;
     let imageFitFrame = 0;
-    const toolbarRow = document.querySelector(".toolbar-row");
-    const syncToolbarHeight = () => {
-      if (toolbarRow) {
-        document.documentElement.style.setProperty(
-          "--text-viewer-toolbar-height",
-          `${toolbarRow.getBoundingClientRect().height}px`
-        );
-      }
-    };
-    syncToolbarHeight();
+    const versionElement = document.createElement("div");
+    versionElement.className = "viewer-version";
+    versionElement.textContent = `v${VIEWER_VERSION}`;
+    root.parentElement.insertBefore(versionElement, root);
 
     const toolbarOffset = () => Math.ceil(
       document.querySelector(".toolbar-row")?.getBoundingClientRect().height || 0
@@ -693,10 +681,7 @@
       global.clearTimeout(scrollHashTimer);
       scrollHashTimer = global.setTimeout(syncHashToCurrentPage, 120);
     });
-    global.addEventListener("resize", () => {
-      syncToolbarHeight();
-      scheduleImageFits();
-    });
+    global.addEventListener("resize", scheduleImageFits);
     global.addEventListener("hashchange", scrollToHashTarget);
 
     const load = async (url = textUrl) => {

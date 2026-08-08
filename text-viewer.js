@@ -46,7 +46,7 @@
 
   const startFractal = () => {
     const canvas = document.querySelector("[data-fractal-background]");
-    if (!canvas) return;
+    if (!canvas || document.querySelector("[data-starfield]")) return;
 
     const gl = canvas.getContext("webgl", {
       alpha: true,
@@ -363,6 +363,11 @@
     const pageIndexFromHash = () => {
       const target = locationFromHash();
       if (!target) return -1;
+      if (target.lineNumber) {
+        const lineRow = root.querySelector(`.line-row[data-line="${target.lineNumber}"]`);
+        const linePage = lineRow?.closest(".doc-page");
+        if (linePage) return pages.indexOf(linePage);
+      }
       if (target.pageNumber) return pages.findIndex((page) => page.dataset.page === target.pageNumber);
       return -1;
     };

@@ -82,7 +82,7 @@
     .document-scroll { padding: 8px; box-sizing: border-box; }
     main { max-width: 1180px; margin: 0 auto; }
     main::after { content: ""; display: block; height: calc(100vh - 3rem); }
-    .doc-page { content-visibility: auto; padding-top: 0; margin: 0 0 8px; }
+    .doc-page { padding-top: 0; margin: 0 0 8px; }
     .doc-page + .doc-page { border-top: 1px solid rgba(232, 232, 232, 0.12); padding-top: 4px; }
     .page-label { text-align: center; font-size: 0.78em; line-height: inherit; color: cyan !important; margin: 0 0 2px; opacity: 0.62; }
     pre { margin: 0; font: inherit; tab-size: 4; }
@@ -100,6 +100,7 @@
     .line-number { position: relative; min-height: 1em; padding-right: 0.25ch; text-align: right; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; user-select: none; }
     .line-number-value { position: relative; z-index: 1; }
     .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
+    .line-content-no-wrap { white-space: pre; overflow-wrap: normal; word-break: normal; }
     .line-content:empty::before { content: " "; }
     .align-center .line-content { text-align: center; }
     .align-center { text-align: center; }
@@ -552,6 +553,7 @@
 
         const content = document.createElement("span");
         content.className = "line-content";
+        if (line.trimStart().startsWith("|")) content.classList.add("line-content-no-wrap");
         appendText(content, line);
 
         row.append(number, content);
@@ -720,7 +722,11 @@
       selection.removeAllRanges();
       selection.addRange(range);
       const rect = range.getBoundingClientRect();
-      const top = Math.max(0, window.scrollY + rect.top - viewportHeight() * 0.28);
+      const toolbarHeight = toolbarOffset();
+      const usableHeight = Math.max(1, viewportHeight() - toolbarHeight);
+      const targetViewportCenter = toolbarHeight + usableHeight / 2;
+      const matchCenter = rect.top + rect.height / 2;
+      const top = Math.max(0, window.scrollY + matchCenter - targetViewportCenter);
       scrollToTop(top);
     };
 

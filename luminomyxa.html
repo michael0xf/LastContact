@@ -55,6 +55,13 @@
     .text-block.line-numbered { white-space: normal; overflow-wrap: normal; }
     .line-row { display: grid; grid-template-columns: var(--line-gutter-width) minmax(0, 1fr); column-gap: var(--line-gutter-gap); align-items: start; }
     .line-row-even .line-content { color: lightgreen; }
+    .line-row-color-0 .line-content { color: #ffcc80; }
+    .line-row-color-1 .line-content { color: lightpink; }
+    .line-row-color-2 .line-content { color: #ffee80; }
+    .line-row-color-3 .line-content { color: lightgreen; }
+    .line-row-color-4 .line-content { color: lightyellow; }
+    .line-row-color-5 .line-content { color: cyan; }
+    .line-row-color-6 .line-content { color: #ffddee; }
     .line-number { position: relative; min-height: 1em; padding-right: 0.25ch; text-align: right; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; user-select: none; }
     .line-number-value { position: relative; z-index: 1; }
     .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
@@ -500,6 +507,7 @@
           value.textContent = lineNumber;
           row.id = `line-${lineNumberText}`;
           row.dataset.line = lineNumberText;
+          row.classList.add(`line-row-color-${lineNumber % 7}`);
           if (lineNumber % 2 === 0) {
             row.classList.add("line-row-even");
           }

@@ -3,7 +3,7 @@
 
   const LINES_PER_PAGE = 34;
   const COLOR_COUNT = 7;
-  const VIEWER_VERSION = 4;
+  const VIEWER_VERSION = 5;
   let started = false;
 
   const styleText = `
@@ -25,7 +25,7 @@
     .line-number { position: relative; min-height: 1em; padding-right: 0.25ch; text-align: right; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; user-select: none; }
     .line-number-value { position: relative; z-index: 1; }
     .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
-    .line-content-no-wrap { white-space: pre; overflow-wrap: normal; word-break: normal; }
+    .line-content-no-wrap { display: block; max-width: 100%; white-space: pre; overflow-wrap: normal; word-break: normal; overflow-x: auto; overscroll-behavior-x: contain; }
     .line-content.align-center { text-align: center; }
     .line-content.align-right { text-align: right; }
     .line-content:empty::before { content: " "; }

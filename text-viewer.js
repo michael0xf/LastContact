@@ -28,6 +28,9 @@
     .line-content:empty::before { content: " "; }
     .align-center .line-content { text-align: center; }
     .align-center { text-align: center; }
+    body[data-hide-page-dividers] .doc-page { margin-bottom: 0; }
+    body[data-hide-page-dividers] .doc-page + .doc-page { border-top: 0; padding-top: 0; }
+    body[data-hide-page-dividers] .page-label { display: none; }
     .loading, .error, .file-load { color: cyan; }
     .file-load { margin-top: 8px; }
     .file-load input { display: block; max-width: 100%; margin-top: 4px; font: inherit; color: cyan; }

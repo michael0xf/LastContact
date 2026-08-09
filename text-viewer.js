@@ -1,9 +1,8 @@
 (function (global) {
   "use strict";
 
-  const LINES_PER_PAGE = 34;
   const COLOR_COUNT = 7;
-  const VIEWER_VERSION = 8;
+  const VIEWER_VERSION = 9;
   let started = false;
 
   const styleText = `
@@ -217,6 +216,13 @@
     const viewportHeight = () => Math.floor(
       global.visualViewport?.height || document.documentElement.clientHeight || global.innerHeight
     );
+    const linesPerPage = () => {
+      const bodyStyle = global.getComputedStyle(document.body);
+      const fontSize = parseFloat(bodyStyle.fontSize) || 16;
+      const lineHeight = parseFloat(bodyStyle.lineHeight) || fontSize * 1.42;
+      const availableHeight = Math.max(lineHeight, viewportHeight() - toolbarOffset() - 12);
+      return Math.max(1, Math.floor(availableHeight / lineHeight));
+    };
     const pageLabelText = (pageNumber) => `page ${pageNumber}`;
     const imageLinePattern = /^\s*<img\s+([^>]*?)\/?>\s*$/iu;
     const attributePattern = /([^\s=\/<>{}]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gu;
@@ -673,6 +679,7 @@
     const renderPages = (text) => {
       root.innerHTML = "";
       const lines = text.replace(/\r\n?/gu, "\n").split("\n");
+      const pageLineCount = linesPerPage();
       let pageNumber = 1;
       let textLines = [];
       const flushTextPage = () => {
@@ -689,7 +696,7 @@
           pageNumber += 1;
         } else {
           textLines.push(line);
-          if (textLines.length >= LINES_PER_PAGE) flushTextPage();
+          if (textLines.length >= pageLineCount) flushTextPage();
         }
       }
       flushTextPage();

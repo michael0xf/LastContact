@@ -144,7 +144,7 @@
 <div class="document-row">
 <div class="document-cell">
 <div class="document-scroll" data-document-scroll>
-<div class="viewer-version">v5</div>
+<div class="viewer-version">v6</div>
 <main data-pages-root>
 <section class="doc-page" id="page-1" data-page="1">
 <div class="page-label">...</div>
@@ -477,8 +477,6 @@
 <script>
   (() => {
     const TEXT_URL = "LastContact_autowrap.txt";
-    const LINES_PER_PAGE = 34;
-
     const form = document.querySelector("[data-find-form]");
     const input = document.querySelector("[data-find-input]");
     const prevPageButton = document.querySelector("[data-prev-page]");
@@ -496,6 +494,13 @@
     const normalize = (value) => value.toLocaleLowerCase();
     const toolbarOffset = () => Math.ceil(document.querySelector(".toolbar-row").getBoundingClientRect().height) + 4;
     const viewportHeight = () => Math.floor(window.visualViewport?.height || document.documentElement.clientHeight || window.innerHeight);
+    const linesPerPage = () => {
+      const bodyStyle = getComputedStyle(document.body);
+      const fontSize = parseFloat(bodyStyle.fontSize) || 16;
+      const lineHeight = parseFloat(bodyStyle.lineHeight) || fontSize * 1.42;
+      const availableHeight = Math.max(lineHeight, viewportHeight() - toolbarOffset() - 12);
+      return Math.max(1, Math.floor(availableHeight / lineHeight));
+    };
     const pageLabelText = (pageNumber) => `page ${pageNumber}`;
     const imageLinePattern = /^\s*<img\s+([^>]*?)\/?>\s*$/iu;
     const attributePattern = /([^\s=\/<>]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gu;
@@ -1052,6 +1057,7 @@
     const renderPages = (rawText) => {
       const normalized = rawText.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
       const lines = normalized.split("\n");
+      const pageLineCount = linesPerPage();
       root.textContent = "";
 
       let pageNumber = 1;
@@ -1074,7 +1080,7 @@
         }
 
         textLines.push(line);
-        if (textLines.length >= LINES_PER_PAGE) flushTextPage();
+        if (textLines.length >= pageLineCount) flushTextPage();
       }
       flushTextPage();
 

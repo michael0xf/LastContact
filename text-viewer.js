@@ -3,7 +3,7 @@
 
   const LINES_PER_PAGE = 34;
   const COLOR_COUNT = 7;
-  const VIEWER_VERSION = 5;
+  const VIEWER_VERSION = 8;
   let started = false;
 
   const styleText = `
@@ -25,7 +25,7 @@
     .line-number { position: relative; min-height: 1em; padding-right: 0.25ch; text-align: right; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; user-select: none; }
     .line-number-value { position: relative; z-index: 1; }
     .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
-    .line-content-no-wrap { display: block; max-width: 100%; white-space: pre; overflow-wrap: normal; word-break: normal; overflow-x: auto; overscroll-behavior-x: contain; }
+    .line-content-no-wrap { display: block; max-width: 100%; white-space: pre; overflow-wrap: normal; word-break: normal; overflow-x: visible; }
     .line-content.align-center { text-align: center; }
     .line-content.align-right { text-align: right; }
     .line-content:empty::before { content: " "; }
@@ -328,9 +328,45 @@
     };
 
     const fitAllImages = () => root.querySelectorAll(".image-block").forEach(fitImageBlock);
+
+    const fitWideTables = () => {
+      const tableRows = [];
+      root.querySelectorAll(".line-content-no-wrap").forEach((content) => {
+        content.style.fontSize = "";
+      });
+
+      const flushTable = () => {
+        if (!tableRows.length) return;
+        const scale = Math.min(...tableRows.map((row) => {
+          const content = row.querySelector(".line-content-no-wrap");
+          return content && content.scrollWidth > content.clientWidth
+            ? content.clientWidth / content.scrollWidth
+            : 1;
+        }));
+        if (scale < 1) {
+          tableRows.forEach((row) => {
+            const content = row.querySelector(".line-content-no-wrap");
+            if (!content) return;
+            const baseSize = parseFloat(global.getComputedStyle(content).fontSize);
+            content.style.fontSize = `${Math.max(1, baseSize * scale)}px`;
+          });
+        }
+        tableRows.length = 0;
+      };
+
+      root.querySelectorAll(".line-row").forEach((row) => {
+        if (row.querySelector(".line-content-no-wrap")) tableRows.push(row);
+        else flushTable();
+      });
+      flushTable();
+    };
+
     const scheduleImageFits = () => {
       global.cancelAnimationFrame(imageFitFrame);
-      imageFitFrame = global.requestAnimationFrame(fitAllImages);
+      imageFitFrame = global.requestAnimationFrame(() => {
+        fitAllImages();
+        fitWideTables();
+      });
     };
 
     const scrollToTop = (top, behavior = "smooth") => {
@@ -418,23 +454,29 @@
       return range;
     };
 
-    const selectRange = (range) => {
-      const selection = global.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
-      const rect = range.getBoundingClientRect();
+    const centerTarget = (target, behavior = "auto") => {
+      const rect = target.getBoundingClientRect();
       const toolbarHeight = toolbarOffset();
       const usableHeight = Math.max(1, viewportHeight() - toolbarHeight);
       const targetViewportCenter = toolbarHeight + usableHeight / 2;
-      const matchCenter = rect.top + rect.height / 2;
-      scrollToTop(Math.max(0, global.scrollY + matchCenter - targetViewportCenter));
+      const targetCenter = rect.top + rect.height / 2;
+      const top = Math.max(0, global.scrollY + targetCenter - targetViewportCenter);
+      scrollToTop(top, behavior);
+    };
+
+    const selectRange = (range, target = range) => {
+      const selection = global.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      centerTarget(target);
+      global.requestAnimationFrame(() => centerTarget(target));
     };
 
     const selectMatch = (query, node, start) => {
       const range = makeRange(node, start, query.length);
       lastMatch = { query: normalize(query), node, start, end: start + query.length };
       replacePageHash(pageForNode(node), lineNumberForNode(node));
-      selectRange(range);
+      selectRange(range, lineRowForNode(node) || range);
     };
 
     const findFirst = (query) => {

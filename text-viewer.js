@@ -2,7 +2,7 @@
   "use strict";
 
   const COLOR_COUNT = 7;
-  const VIEWER_VERSION = 9;
+  const VIEWER_VERSION = 14;
   let started = false;
 
   const styleText = `
@@ -216,13 +216,9 @@
     const viewportHeight = () => Math.floor(
       global.visualViewport?.height || document.documentElement.clientHeight || global.innerHeight
     );
-    const linesPerPage = () => {
-      const bodyStyle = global.getComputedStyle(document.body);
-      const fontSize = parseFloat(bodyStyle.fontSize) || 16;
-      const lineHeight = parseFloat(bodyStyle.lineHeight) || fontSize * 1.42;
-      const availableHeight = Math.max(lineHeight, viewportHeight() - toolbarOffset() - 12);
-      return Math.max(1, Math.floor(availableHeight / lineHeight));
-    };
+    const screenPageHeight = () => Math.max(1, viewportHeight());
+    const screenPageNumber = () => Math.floor(global.scrollY / screenPageHeight()) + 1;
+    const screenPageTop = (pageNumber) => Math.max(0, (pageNumber - 1) * screenPageHeight());
     const pageLabelText = (pageNumber) => `page ${pageNumber}`;
     const imageLinePattern = /^\s*<img\s+([^>]*?)\/?>\s*$/iu;
     const attributePattern = /([^\s=\/<>{}]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gu;
@@ -426,10 +422,10 @@
     };
 
     const replacePageHash = (page, lineNumber = null) => {
-      if (!page?.dataset.page) return;
+      const pageNumber = screenPageNumber();
       const hash = Number.isInteger(lineNumber) && lineNumber > 0
-        ? `#page-${page.dataset.page}-line-${lineNumber}`
-        : `#page-${page.dataset.page}`;
+        ? `#page-${pageNumber}-line-${lineNumber}`
+        : `#page-${pageNumber}`;
       if (global.location.hash !== hash) history.replaceState({}, "", hash);
     };
 
@@ -441,7 +437,6 @@
         const linePage = lineRow?.closest(".doc-page");
         if (linePage) return pages.indexOf(linePage);
       }
-      if (target.pageNumber) return pages.findIndex((page) => page.dataset.page === target.pageNumber);
       return -1;
     };
 
@@ -634,9 +629,14 @@
       0,
       Math.max(document.documentElement.scrollHeight, document.body.scrollHeight) - viewportHeight()
     );
-    const screenStep = () => Math.max(1, viewportHeight() - toolbarOffset()) * 0.75;
+    const pageStep = () => Math.max(1, viewportHeight() - toolbarOffset());
+    const screenStep = () => pageStep() * 2 / 3;
     const scrollByScreenStep = (direction) => {
       scrollToTop(Math.min(Math.max(global.scrollY + direction * screenStep(), 0), maxScrollTop()));
+      resetSearch();
+    };
+    const scrollByPageStep = (direction) => {
+      scrollToTop(Math.min(Math.max(global.scrollY + direction * pageStep(), 0), maxScrollTop()));
       resetSearch();
     };
 
@@ -679,7 +679,6 @@
     const renderPages = (text) => {
       root.innerHTML = "";
       const lines = text.replace(/\r\n?/gu, "\n").split("\n");
-      const pageLineCount = linesPerPage();
       let pageNumber = 1;
       let textLines = [];
       const flushTextPage = () => {
@@ -696,13 +695,13 @@
           pageNumber += 1;
         } else {
           textLines.push(line);
-          if (textLines.length >= pageLineCount) flushTextPage();
         }
       }
       flushTextPage();
       pages = Array.from(root.querySelectorAll(".doc-page"));
       applyPageLabels();
       applyLineNumbers();
+      applyPageLabels();
       scheduleImageFits();
       resetSearch();
     };
@@ -733,8 +732,17 @@
 
     const scrollToHashTarget = () => {
       const target = locationFromHash();
-      const index = pageIndexFromHash();
-      if (index >= 0) scrollToPageIndex(index, "auto", false, target?.lineNumber);
+      if (!target) return;
+      if (target.lineNumber) {
+        const lineRow = root.querySelector(`.line-row[data-line="${target.lineNumber}"]`);
+        const linePage = lineRow?.closest(".doc-page");
+        const linePageIndex = linePage ? pages.indexOf(linePage) : -1;
+        if (linePageIndex >= 0) {
+          scrollToPageIndex(linePageIndex, "auto", false, target.lineNumber);
+          return;
+        }
+      }
+      if (target.pageNumber) scrollToTop(screenPageTop(Number(target.pageNumber)), "auto");
     };
 
     form.addEventListener("submit", (event) => {
@@ -743,8 +751,8 @@
     });
     input.addEventListener("input", resetSearch);
     findUpButton?.addEventListener("click", () => runFind("up"));
-    prevPageButton?.addEventListener("click", () => scrollToPageIndex(navigationPageIndex() - 1));
-    nextPageButton?.addEventListener("click", () => scrollToPageIndex(navigationPageIndex() + 1));
+    prevPageButton?.addEventListener("click", () => scrollByPageStep(-1));
+    nextPageButton?.addEventListener("click", () => scrollByPageStep(1));
     halfPageUpButton?.addEventListener("click", () => scrollByScreenStep(-1));
     halfPageDownButton?.addEventListener("click", () => scrollByScreenStep(1));
     global.addEventListener("scroll", () => {

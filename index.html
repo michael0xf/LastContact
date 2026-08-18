@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="only light">
   <meta name="description" content="«Последний контакт» Михаила Кравченко — научно-фантастический текст о первом контакте, космосе, Лилит, Посейдоне и странностях чужой биосферы.">
   <meta name="keywords" content="Последний контакт, Михаил Кравченко, Last Contact, научная фантастика, фантастика, sci-fi, science fiction, первый контакт, first contact, космос, экзопланета, Лилит, Посейдон, Nyasha Planet">
   <meta name="author" content="Михаил Кравченко">
@@ -63,8 +62,6 @@
     }
   </script>
   <style>
-    /* Keep the explicitly dark page colors out of browser Auto Dark transforms. */
-    :root { color-scheme: light; color-scheme: only light; }
     html { background: #02091d; color: cyan; overflow-y: scroll; scrollbar-gutter: stable; scrollbar-width: auto; scrollbar-color: #72849b #02091d; }
     ::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 32px; height: 12px; }
     ::-webkit-scrollbar:vertical, html::-webkit-scrollbar:vertical, body::-webkit-scrollbar:vertical { width: 32px; }
@@ -94,13 +91,24 @@
     .text-block.line-numbered { white-space: normal; overflow-wrap: normal; }
     .line-row { display: grid; grid-template-columns: var(--line-gutter-width) minmax(0, 1fr); column-gap: var(--line-gutter-gap); align-items: start; }
     .line-row-even .line-content { color: lightgreen; }
-    .line-row-color-0 .line-content { color: #ffcc99; }
-    .line-row-color-1 .line-content { color: lightpink; }
-    .line-row-color-2 .line-content { color: #ffee99; }
-    .line-row-color-3 .line-content { color: lightgreen; }
-    .line-row-color-4 .line-content { color: lightyellow; }
-    .line-row-color-5 .line-content { color: cyan; }
-    .line-row-color-6 .line-content { color: #ffddee; }
+    .line-row-color-0 .line-content { color: #ffcc99; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mP8f2YmAzbAxIADDE4JAODVAnQZUwnCAAAAAElFTkSuQmCC"); }
+    .line-row-color-1 .line-content { color: lightpink; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mP8v+0gAzbAxIADDE4JAO6ZAoYQqSXCAAAAAElFTkSuQmCC"); }
+    .line-row-color-2 .line-content { color: #ffee99; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mP8/24mAzbAxIADDE4JAPshAparHdWjAAAAAElFTkSuQmCC"); }
+    .line-row-color-3 .line-content { color: lightgreen; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mOc8G4CAzbAxIADDE4JAJ3rAh7p+8WAAAAAAElFTkSuQmCC"); }
+    .line-row-color-4 .line-content { color: lightyellow; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mP8//8BAzbAxIADDE4JAD75Au4wvCVuAAAAAElFTkSuQmCC"); }
+    .line-row-color-5 .line-content { color: cyan; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mNk+P+fARtgYsABBqcEAJCMAg5AjfQFAAAAAElFTkSuQmCC"); }
+    .line-row-color-6 .line-content { color: #ffddee; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mP8f/cdAzbAxIADDE4JAC9zAtrdBx17AAAAAElFTkSuQmCC"); }
+    /* Raster fills stay stable when Samsung Internet force-adjusts text colors. */
+    @media screen {
+      @supports (-webkit-background-clip: text) {
+        .line-row .line-content {
+          background-repeat: repeat;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+      }
+    }
     .align-right .line-content { text-align: right; }
     .line-number { position: relative; min-height: 1em; padding-right: 0.25ch; text-align: right; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; user-select: none; }
     .line-number-value { position: relative; z-index: 1; }
@@ -147,7 +155,7 @@
 <div class="document-row">
 <div class="document-cell">
 <div class="document-scroll" data-document-scroll>
-<div class="viewer-version">v14</div>
+<div class="viewer-version">v15</div>
 <main data-pages-root>
 <section class="doc-page" id="page-1" data-page="1">
 <div class="page-label">...</div>

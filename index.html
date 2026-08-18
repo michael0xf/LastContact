@@ -91,28 +91,18 @@
     .text-block.line-numbered { white-space: normal; overflow-wrap: normal; }
     .line-row { display: grid; grid-template-columns: var(--line-gutter-width) minmax(0, 1fr); column-gap: var(--line-gutter-gap); align-items: start; }
     .line-row-even .line-content { color: lightgreen; }
-    .line-row-color-0 .line-content { color: #ffcc99; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mP8f2YmAzbAxIADDE4JAODVAnQZUwnCAAAAAElFTkSuQmCC"); }
-    .line-row-color-1 .line-content { color: lightpink; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mP8v+0gAzbAxIADDE4JAO6ZAoYQqSXCAAAAAElFTkSuQmCC"); }
-    .line-row-color-2 .line-content { color: #ffee99; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mP8/24mAzbAxIADDE4JAPshAparHdWjAAAAAElFTkSuQmCC"); }
-    .line-row-color-3 .line-content { color: lightgreen; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mOc8G4CAzbAxIADDE4JAJ3rAh7p+8WAAAAAAElFTkSuQmCC"); }
-    .line-row-color-4 .line-content { color: lightyellow; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mP8//8BAzbAxIADDE4JAD75Au4wvCVuAAAAAElFTkSuQmCC"); }
-    .line-row-color-5 .line-content { color: cyan; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mNk+P+fARtgYsABBqcEAJCMAg5AjfQFAAAAAElFTkSuQmCC"); }
-    .line-row-color-6 .line-content { color: #ffddee; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFUlEQVR42mP8f/cdAzbAxIADDE4JAC9zAtrdBx17AAAAAElFTkSuQmCC"); }
-    /* Raster fills stay stable when Samsung Internet force-adjusts text colors. */
-    @media screen {
-      @supports (-webkit-background-clip: text) {
-        .line-row .line-content {
-          background-repeat: repeat;
-          -webkit-background-clip: text;
-          background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-      }
-    }
+    .line-row-color-0 .line-content { color: #ffcc99; }
+    .line-row-color-1 .line-content { color: lightpink; }
+    .line-row-color-2 .line-content { color: #ffee99; }
+    .line-row-color-3 .line-content { color: lightgreen; }
+    .line-row-color-4 .line-content { color: lightyellow; }
+    .line-row-color-5 .line-content { color: cyan; }
+    .line-row-color-6 .line-content { color: #ffddee; }
     .align-right .line-content { text-align: right; }
     .line-number { position: relative; min-height: 1em; padding-right: 0.25ch; text-align: right; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; user-select: none; }
     .line-number-value { position: relative; z-index: 1; }
-    .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
+    /* Give Force Dark a dark backdrop without visibly covering the fractal. */
+    .line-content { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; background-color: rgba(2, 9, 29, 0.001); }
     .line-content-no-wrap { display: block; max-width: 100%; white-space: pre; overflow-wrap: normal; word-break: normal; overflow-x: visible; }
     .line-content:empty::before { content: " "; }
     .align-center .line-content { text-align: center; }
@@ -155,7 +145,7 @@
 <div class="document-row">
 <div class="document-cell">
 <div class="document-scroll" data-document-scroll>
-<div class="viewer-version">v15</div>
+<div class="viewer-version">v16</div>
 <main data-pages-root>
 <section class="doc-page" id="page-1" data-page="1">
 <div class="page-label">...</div>

@@ -144,7 +144,7 @@
 <div class="document-row">
 <div class="document-cell">
 <div class="document-scroll" data-document-scroll>
-<div class="viewer-version">v18</div>
+<div class="viewer-version" data-viewer-version>v19</div>
 <main data-pages-root>
 <section class="doc-page" id="page-1" data-page="1">
 <div class="page-label">...</div>
@@ -477,6 +477,8 @@
 <script>
   (() => {
     const TEXT_URL = "LastContact_autowrap.txt";
+    const versionLabel = document.querySelector("[data-viewer-version]");
+    const viewerVersion = versionLabel?.textContent.trim() || "";
     const form = document.querySelector("[data-find-form]");
     const input = document.querySelector("[data-find-input]");
     const prevPageButton = document.querySelector("[data-prev-page]");
@@ -500,6 +502,25 @@
     const pageLabelText = (pageNumber) => `page ${pageNumber}`;
     const imageLinePattern = /^\s*<img\s+([^>]*?)\/?>\s*$/iu;
     const attributePattern = /([^\s=\/<>]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gu;
+
+    const showTextModified = (headerValue) => {
+      if (!versionLabel || !headerValue) return;
+
+      const modified = new Date(headerValue);
+      if (Number.isNaN(modified.getTime())) return;
+
+      const formatted = new Intl.DateTimeFormat("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      }).format(modified);
+
+      versionLabel.textContent = `${viewerVersion} · ${formatted}`;
+      versionLabel.title = `LastContact_autowrap.txt: ${modified.toLocaleString("ru-RU")}`;
+    };
 
     const appendText = (element, text) => {
       element.append(document.createTextNode(text));
@@ -1173,6 +1194,7 @@
     fetch(TEXT_URL, { cache: "no-cache" })
       .then((response) => {
         if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
+        showTextModified(response.headers.get("Last-Modified"));
         return response.text();
       })
       .then((text) => {

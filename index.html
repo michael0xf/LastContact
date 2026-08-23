@@ -57,7 +57,7 @@
       "image": "https://michael0xf.github.io/lastcontact/0.png",
       "license": "https://michael0xf.github.io/lastcontact/LICENSE.md",
       "isAccessibleForFree": true,
-      "dateModified": "2026-07-03",
+      "dateModified": "2026-08-23",
       "encodingFormat": "text/html"
     }
   </script>
@@ -86,6 +86,9 @@
     .doc-page + .doc-page { border-top: 0; padding-top: 0; }
     .page-label { display: none; }
     .viewer-version { max-width: 1180px; margin: 0 auto; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; text-align: right; padding: 0 0.25ch; user-select: none; }
+    .site-footer { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 16px 8px 32px; box-sizing: border-box; color: cyan; font-size: 0.875em; text-align: center; }
+    .site-footer a { color: cyan; text-underline-offset: 0.2em; }
+    .site-footer .separator { padding: 0 0.6ch; opacity: 0.55; }
     pre { margin: 0; font: inherit; tab-size: 4; }
     .text-block { --line-gutter-width: 6ch; --line-gutter-gap: 0.5ch; white-space: pre-wrap; overflow-wrap: break-word; }
     .text-block.line-numbered { white-space: normal; overflow-wrap: normal; }
@@ -155,6 +158,11 @@
 </div>
 </div>
 </div>
+<footer class="site-footer" aria-label="Дополнительные тексты">
+  <a href="infinity.html">Открытый мир: границы описания</a>
+  <span class="separator" aria-hidden="true">·</span>
+  <a href="gov.html">Государство, принуждение и общественный излишек</a>
+</footer>
 <script>
   (() => {
     const canvas = document.querySelector("[data-fractal-background]");

@@ -79,7 +79,7 @@
     .document-scroll { padding: 8px; box-sizing: border-box; }
     main { max-width: 1180px; margin: 0 auto; }
     main::after { content: ""; display: block; height: calc(100vh - 3rem); }
-    .site-footer { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 16px 8px 32px; box-sizing: border-box; color: cyan; font-size: 0.875em; text-align: center; }
+    .site-footer { position: relative; z-index: 1; width: fit-content; max-width: min(760px, calc(100% - 16px)); margin: 0 auto 10px; padding: 6px 10px; box-sizing: border-box; color: cyan; font-size: 0.875em; line-height: 1.55; text-align: center; }
     .site-footer a { color: cyan; text-underline-offset: 0.2em; }
     .site-footer .separator { padding: 0 0.6ch; opacity: 0.55; }
     .image-block { width: calc(100vw - 16px); margin: 8px 0 10px 50%; transform: translateX(-50%); }
@@ -124,6 +124,13 @@
       </form>
     </div>
     <div class="document-scroll">
+      <footer class="site-footer" aria-label="Ссылки">
+        <a href="./">«Последний контакт»</a>
+        <span class="separator" aria-hidden="true">·</span>
+        <a href="phyl2.txt">Текстовая версия эссе</a>
+        <span class="separator" aria-hidden="true">·</span>
+        <a href="michael0xf.html">Привет, Чебурашка!</a>
+      </footer>
       <main data-pages-root>
         <section class="doc-page" id="page-1" data-page="1">
           <div class="page-label">...</div>
@@ -132,13 +139,6 @@
       </main>
     </div>
   </div>
-  <footer class="site-footer" aria-label="Ссылки">
-    <a href="./">«Последний контакт»</a>
-    <span class="separator" aria-hidden="true">·</span>
-    <a href="phyl2.txt">Текстовая версия эссе</a>
-    <span class="separator" aria-hidden="true">·</span>
-    <a href="michael0xf.html">Привет, Чебурашка!</a>
-  </footer>
   <script src="text-viewer.js"></script>
 </body>
 </html>

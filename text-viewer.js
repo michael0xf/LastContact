@@ -2,7 +2,7 @@
   "use strict";
 
   const COLOR_COUNT = 7;
-  const VIEWER_VERSION = 14;
+  const VIEWER_VERSION = 23;
   let started = false;
 
   const styleText = `
@@ -205,10 +205,14 @@
     let lastMatch = null;
     let scrollHashTimer = 0;
     let imageFitFrame = 0;
-    const versionElement = document.createElement("div");
+    let versionElement = document.querySelector("[data-viewer-version]");
+    if (!versionElement) {
+      versionElement = document.createElement("div");
+      versionElement.dataset.viewerVersion = "";
+      root.parentElement.insertBefore(versionElement, root);
+    }
     versionElement.className = "viewer-version";
     versionElement.textContent = `v${VIEWER_VERSION}`;
-    root.parentElement.insertBefore(versionElement, root);
 
     const toolbarOffset = () => Math.ceil(
       document.querySelector(".toolbar-row")?.getBoundingClientRect().height || 0

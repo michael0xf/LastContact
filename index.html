@@ -85,10 +85,12 @@
     .doc-page { padding-top: 0; margin: 0; }
     .doc-page + .doc-page { border-top: 0; padding-top: 0; }
     .page-label { display: none; }
-    .viewer-version { max-width: 1180px; margin: 0 auto; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; text-align: right; padding: 0 0.25ch; user-select: none; }
-    .site-footer { position: relative; z-index: 1; width: fit-content; max-width: min(760px, calc(100% - 16px)); margin: 0 auto 10px; padding: 6px 10px; box-sizing: border-box; color: cyan; font-size: 0.875em; line-height: 1.55; text-align: center; }
+    .viewer-version { flex: 0 0 auto; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; text-align: right; padding: 0 0.25ch; white-space: nowrap; user-select: none; }
+    .site-footer { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; width: fit-content; max-width: min(760px, calc(100% - 16px)); margin: 0 auto 10px; padding: 6px 10px; box-sizing: border-box; color: cyan; font-size: 0.875em; line-height: 1.55; text-align: center; }
+    .site-footer-links { min-width: 0; text-align: center; }
     .site-footer a { color: cyan; text-underline-offset: 0.2em; }
     .site-footer .separator { padding: 0 0.6ch; opacity: 0.55; }
+    .site-footer .viewer-version { margin-left: auto; }
     pre { margin: 0; font: inherit; tab-size: 4; }
     .text-block { --line-gutter-width: 6ch; --line-gutter-gap: 0.5ch; white-space: pre-wrap; overflow-wrap: break-word; }
     .text-block.line-numbered { white-space: normal; overflow-wrap: normal; }
@@ -148,9 +150,9 @@
 <div class="document-cell">
 <div class="document-scroll" data-document-scroll>
 <footer class="site-footer" aria-label="Дополнительные тексты">
-  <a href="michael0xf.html">Привет, Чебурашка!</a>
+  <span class="site-footer-links"><a href="michael0xf.html">Привет, Чебурашка!</a></span>
+  <span class="viewer-version" data-viewer-version aria-label="Версия просмотрщика">v23</span>
 </footer>
-<div class="viewer-version" data-viewer-version>v22</div>
 <main data-pages-root>
 <section class="doc-page" id="page-1" data-page="1">
 <div class="page-label">...</div>

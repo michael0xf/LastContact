@@ -32,98 +32,307 @@
       "datePublished": "2026-08-23",
       "dateModified": "2026-08-23",
       "url": "https://michael0xf.github.io/lastcontact/michael0xf.html",
-      "isAccessibleForFree": true
+      "isAccessibleForFree": true,
+      "hasPart": [
+        {
+          "@type": "CreativeWork",
+          "name": "Последний Контакт. Люминомикса.",
+          "url": "https://michael0xf.github.io/lastcontact/"
+        },
+        {
+          "@type": "Article",
+          "name": "Почему описание не может вместить всё",
+          "url": "https://michael0xf.github.io/lastcontact/infinity.html"
+        },
+        {
+          "@type": "Article",
+          "name": "От прибавочного продукта к культуре эротизированного принуждения и коллективного харассмента",
+          "url": "https://michael0xf.github.io/lastcontact/gov.html"
+        }
+      ]
     }
   </script>
   <style>
-    html { background: #02091d; color: cyan; overflow-y: scroll; scrollbar-gutter: stable; scrollbar-width: auto; scrollbar-color: #72849b #02091d; }
-    ::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 32px; height: 12px; }
-    ::-webkit-scrollbar:vertical, html::-webkit-scrollbar:vertical, body::-webkit-scrollbar:vertical { width: 32px; }
-    ::-webkit-scrollbar:horizontal, html::-webkit-scrollbar:horizontal, body::-webkit-scrollbar:horizontal { height: 12px; }
-    ::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track { background: #02091d; }
-    ::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb { background: #72849b; border: 1px solid #02091d; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover, html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover { background: #b3b8be; }
-    @media (pointer: coarse) {
-      ::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 36px; height: 12px; }
-      ::-webkit-scrollbar:vertical, html::-webkit-scrollbar:vertical, body::-webkit-scrollbar:vertical { width: 36px; }
+    :root {
+      color-scheme: dark;
+      --page: #02091d;
+      --panel: rgba(3, 13, 35, 0.78);
+      --panel-strong: rgba(5, 20, 44, 0.9);
+      --cyan: #72f6ff;
+      --cyan-soft: rgba(114, 246, 255, 0.62);
+      --cyan-faint: rgba(114, 246, 255, 0.16);
+      --text: #d9fcff;
+      --muted: #87aeb7;
+      --green: #b8ffc8;
+      --pink: #ffd4e4;
     }
-    body { margin: 0; padding: 0; background: #02091d; color: cyan; font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; font-size: 16px; font-weight: 500; line-height: 1.42; }
-    .fractal-background { position: fixed; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
-    .page-shell { position: relative; z-index: 1; width: 100%; min-height: 100vh; background: rgba(2, 9, 29, 0.32); }
-    .toolbar-row { position: sticky; top: 0; z-index: 20; min-width: 0; background: rgba(2, 9, 29, 0.96); border-bottom: 1px solid rgba(232, 232, 232, 0.18); }
-    .toolbar-cell { min-width: 0; }
-    .document-row, .document-cell { min-width: 0; }
-    .find-bar { display: flex; gap: 4px; width: 100%; padding: 2px 4px; box-sizing: border-box; background: transparent; }
-    .find-bar input, .find-bar button { font: inherit; color: cyan; background: #101316; border: 1px solid rgba(0, 255, 255, 0.36); border-radius: 4px; }
-    .find-bar input { flex: 1 1 auto; min-width: 0; padding: 5px 7px; }
-    .find-bar button { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; min-width: 42px; height: 34px; box-sizing: border-box; padding: 5px 8px; cursor: pointer; }
-    .find-bar [data-prev-page], .find-bar [data-next-page] { font-size: 1.6em; line-height: 1; padding-top: 0; padding-bottom: 0; }
-    .find-bar input:focus, .find-bar button:focus { outline: 2px solid cyan; outline-offset: 2px; }
-    .find-bar button:hover { background: #171c20; }
-    .document-scroll { padding: 8px; box-sizing: border-box; }
-    .document-scroll::after { content: ""; display: block; height: calc(100vh - 3rem); }
-    main { max-width: 1180px; margin: 0 auto; }
-    .viewer-version-standalone { max-width: 1180px; margin: 0 auto 4px; box-sizing: border-box; }
-    .related-links { max-width: 1180px; margin: 0 auto 10px; padding-left: 2em; box-sizing: border-box; }
-    .related-links li + li { margin-top: 0.25em; }
-    .related-links a { color: cyan; text-underline-offset: 0.2em; }
-    .image-block { width: calc(100vw - 16px); margin: 8px 0 10px 50%; transform: translateX(-50%); }
-    .image-block img { display: block; width: 100%; max-width: 100%; height: auto; margin: 0 auto; border: 0; }
-    .image-block.fit-height img { width: auto; max-width: 100%; object-fit: contain; }
-    @media (max-width: 700px) {
-      body { font-size: 14px; }
-      .document-scroll { padding: 6px; }
-      .find-bar { gap: 2px; padding: 2px; }
-      .find-bar button { min-width: 36px; height: 32px; padding: 5px 4px; }
-      .find-bar [data-prev-page], .find-bar [data-next-page] { padding-top: 0; padding-bottom: 0; }
+
+    * { box-sizing: border-box; }
+
+    html {
+      min-height: 100%;
+      background: var(--page);
+      scrollbar-gutter: stable;
+      scrollbar-color: #72849b var(--page);
     }
+
+    body {
+      min-height: 100vh;
+      min-height: 100svh;
+      margin: 0;
+      padding: clamp(18px, 5vw, 64px);
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 16% 18%, rgba(0, 230, 255, 0.12), transparent 28%),
+        radial-gradient(circle at 86% 16%, rgba(255, 132, 190, 0.09), transparent 24%),
+        radial-gradient(circle at 65% 86%, rgba(130, 255, 176, 0.08), transparent 30%),
+        var(--page);
+      font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at 12% 23%, rgba(114, 246, 255, 0.62) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 72% 31%, rgba(255, 212, 228, 0.52) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 46% 78%, rgba(184, 255, 200, 0.48) 0 1px, transparent 1.5px);
+      background-size: 97px 83px, 137px 109px, 173px 149px;
+      opacity: 0.28;
+    }
+
+    body::after {
+      background-image:
+        linear-gradient(rgba(114, 246, 255, 0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(114, 246, 255, 0.028) 1px, transparent 1px);
+      background-size: 42px 42px;
+      -webkit-mask-image: radial-gradient(circle at center, #000 0, transparent 78%);
+      mask-image: radial-gradient(circle at center, #000 0, transparent 78%);
+    }
+
+    .author-card {
+      position: relative;
+      z-index: 1;
+      width: min(900px, 100%);
+      padding: clamp(24px, 5vw, 52px);
+      overflow: hidden;
+      background:
+        linear-gradient(145deg, rgba(10, 34, 59, 0.66), transparent 48%),
+        var(--panel);
+      border: 1px solid var(--cyan-faint);
+      border-radius: 22px;
+      box-shadow:
+        0 28px 90px rgba(0, 0, 0, 0.48),
+        inset 0 1px 0 rgba(217, 252, 255, 0.06);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+    }
+
+    .author-card::before {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      right: -190px;
+      top: -220px;
+      border: 1px solid rgba(114, 246, 255, 0.16);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 42px rgba(114, 246, 255, 0.025),
+        0 0 0 96px rgba(114, 246, 255, 0.018);
+      pointer-events: none;
+    }
+
+    .greeting-panel {
+      margin: 0 0 clamp(24px, 5vw, 44px);
+      padding: clamp(18px, 3vw, 28px);
+      background: linear-gradient(90deg, rgba(114, 246, 255, 0.08), rgba(114, 246, 255, 0.025));
+      border-left: 3px solid var(--cyan);
+      border-radius: 0 14px 14px 0;
+    }
+
+    .greeting {
+      margin: 0;
+      color: var(--green);
+      font-size: clamp(1.45rem, 4vw, 2.65rem);
+      line-height: 1.18;
+      overflow-wrap: anywhere;
+    }
+
+    .works-heading {
+      margin: 0 0 14px;
+      color: var(--pink);
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .works {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .work-link {
+      display: grid;
+      grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      min-height: 72px;
+      padding: 14px 16px;
+      color: var(--cyan);
+      background: rgba(2, 9, 29, 0.44);
+      border: 1px solid rgba(114, 246, 255, 0.14);
+      border-radius: 12px;
+      text-decoration: none;
+      transition: color 160ms ease, border-color 160ms ease, background 160ms ease, transform 160ms ease;
+    }
+
+    .work-link:hover {
+      color: var(--green);
+      background: var(--panel-strong);
+      border-color: rgba(184, 255, 200, 0.42);
+      transform: translateX(4px);
+    }
+
+    .work-link:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 3px;
+    }
+
+    .work-number {
+      color: var(--muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+    }
+
+    .work-copy {
+      min-width: 0;
+    }
+
+    .work-title {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+    .work-kind {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    .work-arrow {
+      color: var(--cyan-soft);
+      font-size: 1.1rem;
+    }
+
+    .modified {
+      display: block;
+      margin-top: clamp(24px, 4vw, 38px);
+      color: var(--cyan-soft);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-align: right;
+      opacity: 0.64;
+    }
+
+    @media (max-width: 620px) {
+      body { padding: 12px; }
+      .author-card { padding: 22px 18px; border-radius: 16px; }
+      .work-link { grid-template-columns: 1.8rem minmax(0, 1fr); }
+      .work-arrow { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .work-link { transition: none; }
+    }
+
     @media print {
-      body { background: #fff; color: #000; }
-      .fractal-background { display: none; }
-      .page-shell { background: transparent; }
-      .document-scroll { padding: 0; }
-      .document-scroll::after { display: none; }
-      .toolbar-row { display: none !important; }
-      .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; }
-      .doc-page:last-child { break-after: auto; page-break-after: auto; }
-      .page-label { color: #777 !important; }
-      .image-block { width: 100%; margin-left: 0; transform: none; }
-    }
-    @media (max-width: 700px) {
-      .image-block { width: calc(100vw - 12px); margin-top: 8px; margin-bottom: 10px; }
+      body { display: block; padding: 0; color: #000; background: #fff; }
+      body::before, body::after, .author-card::before { display: none; }
+      .author-card { width: 100%; padding: 0; color: #000; background: #fff; border: 0; box-shadow: none; }
+      .work-link { color: #000; background: transparent; border-color: #aaa; }
     }
   </style>
 </head>
-<body data-text-url="michael0xf.txt" data-hide-page-dividers>
-  <canvas class="fractal-background" data-fractal-background aria-hidden="true"></canvas>
-  <div class="page-shell">
-    <div class="toolbar-row">
-      <form class="find-bar" data-find-form>
-        <button type="button" data-prev-page title="previous page">⎗</button>
-        <button type="button" data-half-page-up title="three quarter screen up">↑▭</button>
-        <button type="button" data-find-up title="find up">↑🔍</button>
-        <input data-find-input type="search" autocomplete="off" spellcheck="false" aria-label="find">
-        <button type="submit" data-find-down title="find down">🔎↓</button>
-        <button type="button" data-half-page-down title="three quarter screen down">▭↓</button>
-        <button type="button" data-next-page title="next page">⎘</button>
-      </form>
-    </div>
-    <div class="document-scroll">
-      <div class="viewer-version viewer-version-standalone" data-viewer-version aria-label="Версия просмотрщика">v25</div>
-      <ul class="related-links" aria-label="Тексты Михаила Кравченко">
-        <li><a href="index.html">Последний Контакт. Люминомикса.</a></li>
-        <li><a href="infinity.html">Почему описание не может вместить всё</a></li>
-        <li><a href="gov.html">От прибавочного продукта к культуре эротизированного принуждения и коллективного харассмента</a></li>
+<body>
+  <main class="author-card">
+    <section class="greeting-panel" aria-label="Приветствие">
+      <h1 class="greeting" data-michael-text>Привет, Чебурашка!</h1>
+    </section>
+
+    <nav aria-labelledby="works-heading">
+      <h2 class="works-heading" id="works-heading">Тексты</h2>
+      <ul class="works">
+        <li>
+          <a class="work-link" href="index.html">
+            <span class="work-number" aria-hidden="true">01</span>
+            <span class="work-copy">
+              <span class="work-title">Последний Контакт. Люминомикса.</span>
+              <span class="work-kind">Научная фантастика</span>
+            </span>
+            <span class="work-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="work-link" href="infinity.html">
+            <span class="work-number" aria-hidden="true">02</span>
+            <span class="work-copy">
+              <span class="work-title">Почему описание не может вместить всё</span>
+              <span class="work-kind">Эссе о границах познания</span>
+            </span>
+            <span class="work-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="work-link" href="gov.html">
+            <span class="work-number" aria-hidden="true">03</span>
+            <span class="work-copy">
+              <span class="work-title">От прибавочного продукта к культуре эротизированного принуждения и коллективного харассмента</span>
+              <span class="work-kind">Эссе о власти и принуждении</span>
+            </span>
+            <span class="work-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
       </ul>
-      <main data-pages-root>
-        <section class="doc-page" id="page-1" data-page="1">
-          <div class="page-label">...</div>
-          <pre class="text-block loading">Загрузка michael0xf.txt...</pre>
-        </section>
-      </main>
-      <time class="document-modified" data-document-modified datetime="2026-08-23T13:30:22-03:00" aria-label="Дата и время изменения текста">23.08.2026, 13:30</time>
-    </div>
-  </div>
-  <script src="text-viewer.js?v=25&amp;cache=timestamp-fix"></script>
+    </nav>
+
+    <time class="modified" datetime="2026-08-23T13:30:22-03:00">23.08.2026, 13:30</time>
+  </main>
+
+  <script>
+    (() => {
+      const greeting = document.querySelector("[data-michael-text]");
+      if (!greeting) return;
+
+      fetch("michael0xf.txt?v=25", { cache: "no-cache" })
+        .then((response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.text();
+        })
+        .then((text) => {
+          const value = text.trim();
+          if (value) greeting.textContent = value;
+        })
+        .catch(() => {
+          // The literal HTML text remains a complete fallback for file:// and offline use.
+        });
+    })();
+  </script>
 </body>
 </html>

@@ -86,7 +86,7 @@
     .doc-page + .doc-page { border-top: 0; padding-top: 0; }
     .page-label { display: none; }
     .viewer-version { flex: 0 0 auto; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; text-align: right; padding: 0 0.25ch; white-space: nowrap; user-select: none; }
-    .document-modified { max-width: 1180px; margin: 8px auto 0; box-sizing: border-box; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; padding-right: 0.25ch; text-align: right; user-select: none; }
+    .document-modified { display: block; max-width: 1180px; margin: 8px auto 0; box-sizing: border-box; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; padding-right: 0.25ch; text-align: right; user-select: none; }
     .site-footer { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; width: fit-content; max-width: min(760px, calc(100% - 16px)); margin: 0 auto 10px; padding: 6px 10px; box-sizing: border-box; color: cyan; font-size: 0.875em; line-height: 1.55; text-align: center; }
     .site-footer-links { min-width: 0; text-align: center; }
     .site-footer a { color: cyan; text-underline-offset: 0.2em; }
@@ -152,7 +152,7 @@
 <div class="document-scroll" data-document-scroll>
 <footer class="site-footer" aria-label="Дополнительные тексты">
   <span class="site-footer-links"><a href="michael0xf.html">Привет, Чебурашка!</a></span>
-  <span class="viewer-version" data-viewer-version aria-label="Версия просмотрщика">v23</span>
+  <span class="viewer-version" data-viewer-version aria-label="Версия просмотрщика">v24</span>
 </footer>
 <main data-pages-root>
 <section class="doc-page" id="page-1" data-page="1">
@@ -160,7 +160,7 @@
 <pre class="text-block loading">Загрузка LastContact_autowrap.txt...</pre>
 </section>
 </main>
-<div class="document-modified" data-document-modified aria-label="Дата и время изменения текста"></div>
+<time class="document-modified" data-document-modified datetime="2026-08-21T07:00:44-03:00" aria-label="Дата и время изменения текста">21.08.2026, 07:00</time>
 </div>
 </div>
 </div>
@@ -487,7 +487,6 @@
 <script>
   (() => {
     const TEXT_URL = "LastContact_autowrap.txt";
-    const modifiedLabel = document.querySelector("[data-document-modified]");
     const form = document.querySelector("[data-find-form]");
     const input = document.querySelector("[data-find-input]");
     const prevPageButton = document.querySelector("[data-prev-page]");
@@ -511,25 +510,6 @@
     const pageLabelText = (pageNumber) => `page ${pageNumber}`;
     const imageLinePattern = /^\s*<img\s+([^>]*?)\/?>\s*$/iu;
     const attributePattern = /([^\s=\/<>]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/gu;
-
-    const showTextModified = (headerValue) => {
-      if (!modifiedLabel || !headerValue) return;
-
-      const modified = new Date(headerValue);
-      if (Number.isNaN(modified.getTime())) return;
-
-      const formatted = new Intl.DateTimeFormat("ru-RU", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-      }).format(modified);
-
-      modifiedLabel.textContent = formatted;
-      modifiedLabel.title = `LastContact_autowrap.txt: ${modified.toLocaleString("ru-RU")}`;
-    };
 
     const appendText = (element, text) => {
       element.append(document.createTextNode(text));
@@ -1203,7 +1183,6 @@
     fetch(TEXT_URL, { cache: "no-cache" })
       .then((response) => {
         if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
-        showTextModified(response.headers.get("Last-Modified"));
         return response.text();
       })
       .then((text) => {

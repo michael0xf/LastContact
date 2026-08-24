@@ -2,7 +2,7 @@
   "use strict";
 
   const COLOR_COUNT = 7;
-  const VIEWER_VERSION = 23;
+  const VIEWER_VERSION = 24;
   let started = false;
 
   const styleText = `
@@ -40,7 +40,7 @@
       z-index: 20;
     }
     .viewer-version { color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; text-align: right; padding-right: 0.25ch; user-select: none; }
-    .document-modified { max-width: 1180px; margin: 8px auto 0; box-sizing: border-box; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; padding-right: 0.25ch; text-align: right; user-select: none; }
+    .document-modified { display: block; max-width: 1180px; margin: 8px auto 0; box-sizing: border-box; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; padding-right: 0.25ch; text-align: right; user-select: none; }
     .loading, .error, .file-load { color: cyan; }
     .file-load { margin-top: 8px; }
     .file-load input { display: block; max-width: 100%; margin-top: 4px; font: inherit; color: cyan; }
@@ -223,23 +223,6 @@
       root.insertAdjacentElement("afterend", modifiedElement);
     }
     modifiedElement.classList.add("document-modified");
-
-    const showTextModified = (value, source = textUrl) => {
-      if (!value) return;
-
-      const modified = new Date(value);
-      if (Number.isNaN(modified.getTime())) return;
-
-      modifiedElement.textContent = new Intl.DateTimeFormat("ru-RU", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-      }).format(modified);
-      modifiedElement.title = `${source}: ${modified.toLocaleString("ru-RU")}`;
-    };
 
     const toolbarOffset = () => Math.ceil(
       document.querySelector(".toolbar-row")?.getBoundingClientRect().height || 0
@@ -752,7 +735,6 @@
       fileInput.addEventListener("change", async () => {
         const file = fileInput.files?.[0];
         if (!file) return;
-        showTextModified(file.lastModified, file.name);
         renderPages(await file.text());
         scrollToPageIndex(0, "auto", false);
       });
@@ -797,7 +779,6 @@
     const load = async (url = textUrl) => {
       const response = await fetch(url, { cache: "no-cache" });
       if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
-      showTextModified(response.headers.get("Last-Modified"), url);
       renderPages(await response.text());
       scrollToHashTarget();
       global.requestAnimationFrame(() => global.requestAnimationFrame(scrollToHashTarget));

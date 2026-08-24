@@ -31,10 +31,9 @@
     .find-bar button:hover { background: #171c20; }
     .document-scroll { padding: 8px; box-sizing: border-box; }
     main { max-width: 1180px; margin: 0 auto; }
-    main::after { content: ""; display: block; height: calc(100vh - 3rem); }
+    .document-scroll::after { content: ""; display: block; height: calc(100vh - 3rem); }
     .site-footer { position: relative; z-index: 1; display: flex; justify-content: flex-end; width: fit-content; max-width: min(760px, calc(100% - 16px)); margin: 0 auto 10px; padding: 6px 10px; box-sizing: border-box; color: cyan; font-size: 0.875em; line-height: 1.55; }
     .site-footer .viewer-version { flex: 0 0 auto; padding-right: 0.25ch; white-space: nowrap; }
-    .document-modified { padding-bottom: 3rem; }
     .image-block { width: calc(100vw - 16px); margin: 8px 0 10px 50%; transform: translateX(-50%); }
     .image-block img { display: block; width: 100%; max-width: 100%; height: auto; margin: 0 auto; border: 0; }
     .image-block.fit-height img { width: auto; max-width: 100%; object-fit: contain; }
@@ -51,7 +50,7 @@
       .page-shell { background: transparent; }
       .document-scroll { padding: 0; }
       .toolbar-row { display: none !important; }
-      main::after { display: none; }
+      .document-scroll::after { display: none; }
       .doc-page { break-after: page; page-break-after: always; border-top: 0 !important; margin-bottom: 0; }
       .doc-page:last-child { break-after: auto; page-break-after: auto; }
       .page-label { color: #777 !important; }

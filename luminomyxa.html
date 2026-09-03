@@ -52,7 +52,11 @@
     .page-label { display: none; }
     .viewer-version { flex: 0 0 auto; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; text-align: right; padding: 0 0.25ch; white-space: nowrap; user-select: none; }
     .document-modified { display: block; max-width: 1180px; margin: 8px auto 0; box-sizing: border-box; color: cyan; font-size: 0.78em; line-height: inherit; opacity: 0.42; padding-right: 0.25ch; text-align: right; user-select: none; }
-    .site-footer { position: relative; z-index: 1; display: flex; justify-content: flex-end; width: fit-content; max-width: min(760px, calc(100% - 16px)); margin: 0 auto 10px; padding: 6px 10px; box-sizing: border-box; color: cyan; font-size: 0.875em; line-height: 1.55; }
+    .site-footer { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; width: fit-content; max-width: min(760px, calc(100% - 16px)); margin: 0 auto 10px; padding: 6px 10px; box-sizing: border-box; color: cyan; font-size: 0.875em; line-height: 1.55; text-align: center; }
+    .site-footer-links { min-width: 0; text-align: center; }
+    .site-footer a { color: cyan; text-underline-offset: 0.2em; }
+    .site-footer .separator { padding: 0 0.6ch; opacity: 0.55; }
+    .site-footer .viewer-version { margin-left: auto; }
     .story-continue { display: block; max-width: 1180px; margin: 6px auto 14px; box-sizing: border-box; padding: 0 0.25ch; color: cyan; font-size: 0.95em; text-align: left; text-underline-offset: 0.2em; }
     .story-continue.is-default { opacity: 0.6; }
     pre { margin: 0; font: inherit; tab-size: 4; }
@@ -113,8 +117,9 @@
 <div class="document-row">
 <div class="document-cell">
 <div class="document-scroll" data-document-scroll>
-<footer class="site-footer" aria-label="Версия просмотрщика">
-  <span class="viewer-version" data-viewer-version>v25</span>
+<footer class="site-footer" aria-label="Дополнительные тексты">
+  <span class="site-footer-links"><a href="michael0xf.html">Привет, чебурашка!</a></span>
+  <span class="viewer-version" data-viewer-version aria-label="Версия просмотрщика">v25</span>
 </footer>
 <main data-pages-root>
 <section class="doc-page" id="page-1" data-page="1">
@@ -124,8 +129,9 @@
 </main>
 <span class="story-continue is-default">&lt;Продолжение вспоминается&gt;</span>
 <time class="document-modified" data-document-modified datetime="2026-08-15T13:43:55-03:00" aria-label="Дата и время изменения текста">15.08.2026, 13:43</time>
-<footer class="site-footer site-footer-bottom" aria-label="Версия просмотрщика">
-  <span class="viewer-version" data-viewer-version>v25</span>
+<footer class="site-footer site-footer-bottom" aria-label="Дополнительные тексты">
+  <span class="site-footer-links"><a href="michael0xf.html">Привет, чебурашка!</a></span>
+  <span class="viewer-version" data-viewer-version aria-label="Версия просмотрщика">v25</span>
 </footer>
 </div>
 </div>
